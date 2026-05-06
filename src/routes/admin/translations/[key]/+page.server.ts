@@ -7,7 +7,7 @@ import {
 	renameTranslationKey,
 	setTranslationValues,
 	updateTranslationKeyMeta
-} from '$lib/server/admin-i18n';
+} from '$lib/server/i18n/admin';
 import { parseValuesForm } from '../_form';
 import type { Actions, PageServerLoad } from './$types';
 

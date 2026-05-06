@@ -1,6 +1,6 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { requireAdmin } from '$lib/server/admin-guard';
-import { createTranslationKey } from '$lib/server/admin-i18n';
+import { createTranslationKey } from '$lib/server/i18n/admin';
 import { parseKeyForm } from '../_form';
 import type { Actions, PageServerLoad } from './$types';
 

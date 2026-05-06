@@ -1,5 +1,5 @@
 import { fail, type ActionFailure } from '@sveltejs/kit';
-import { validateKey } from '$lib/server/admin-i18n';
+import { validateKey } from '$lib/server/i18n/admin';
 
 export type KeyFormState = {
 	values: { key?: string; description?: string };

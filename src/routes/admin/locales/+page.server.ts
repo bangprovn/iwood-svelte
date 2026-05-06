@@ -1,6 +1,6 @@
 import { fail } from '@sveltejs/kit';
 import { requireAdmin } from '$lib/server/admin-guard';
-import { setDefaultLocale } from '$lib/server/admin-i18n';
+import { setDefaultLocale } from '$lib/server/i18n/admin';
 import { localesResource } from '$lib/server/cms/locales';
 
 export const load = localesResource.list.load;

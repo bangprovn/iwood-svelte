@@ -1,5 +1,5 @@
 import { getPageBySlug } from '$lib/server/cms/admin';
-import { getI18nSnapshot } from '$lib/server/translations';
+import { getI18nSnapshot } from '$lib/server/i18n';
 import { error } from '@sveltejs/kit';
 
 const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;

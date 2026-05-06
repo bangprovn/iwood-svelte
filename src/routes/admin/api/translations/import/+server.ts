@@ -1,6 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import { requireAdmin } from '$lib/server/admin-guard';
-import { importLocaleDictionary } from '$lib/server/admin-i18n';
+import { importLocaleDictionary } from '$lib/server/i18n/admin';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async (event) => {

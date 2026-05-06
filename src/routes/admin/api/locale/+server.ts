@@ -1,6 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import { requireAdmin } from '$lib/server/admin-guard';
-import { getI18nSnapshot } from '$lib/server/translations';
+import { getI18nSnapshot } from '$lib/server/i18n';
 import type { RequestHandler } from './$types';
 
 const COOKIE_NAME = 'LOCALE';

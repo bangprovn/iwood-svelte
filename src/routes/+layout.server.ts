@@ -1,5 +1,5 @@
 import { listCategories, listProducts } from '$lib/server/cms';
-import { buildMessagesForLocale, getI18nSnapshot } from '$lib/server/translations';
+import { buildMessagesForLocale, getI18nSnapshot } from '$lib/server/i18n';
 import { getPageOverride } from '$lib/server/cms/admin';
 import {
 	ensurePrimaryMenuSeed,

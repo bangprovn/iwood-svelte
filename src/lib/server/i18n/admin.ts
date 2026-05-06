@@ -2,9 +2,9 @@
 // already passed `requireAdmin`. Each write invalidates the in-memory cache.
 
 import { and, asc, eq, like, or, sql } from 'drizzle-orm';
-import { db } from './db';
-import { appLocale, appTranslation, appTranslationKey } from './db/schema';
-import { invalidateI18n } from './translations';
+import { db } from '../db';
+import { appLocale, appTranslation, appTranslationKey } from '../db/schema';
+import { invalidateI18n } from '.';
 
 const LOCALE_CODE_RE = /^[a-z]{2,3}(-[A-Za-z0-9]+)*$/;
 const KEY_RE = /^[A-Za-z0-9_][A-Za-z0-9_.-]*$/;

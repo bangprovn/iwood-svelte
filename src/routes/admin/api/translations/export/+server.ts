@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { requireAdmin } from '$lib/server/admin-guard';
-import { exportLocaleDictionary } from '$lib/server/admin-i18n';
+import { exportLocaleDictionary } from '$lib/server/i18n/admin';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async (event) => {

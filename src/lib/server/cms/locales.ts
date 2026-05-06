@@ -7,7 +7,7 @@ import {
 	getLocale,
 	listLocales,
 	updateLocale
-} from '$lib/server/admin-i18n';
+} from '$lib/server/i18n/admin';
 
 export const localesResource = defineResource({
 	name: 'Locale',

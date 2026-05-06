@@ -1,9 +1,9 @@
 import { asc, inArray } from 'drizzle-orm';
-import { db } from './db';
-import { appLocale, appTranslation, appTranslationKey } from './db/schema';
+import { db } from '../db';
+import { appLocale, appTranslation, appTranslationKey } from '../db/schema';
 import { setKnownLocales } from '$lib/i18n/url';
 import type { LocaleRow } from '$lib/i18n';
-import seedJson from './translations-seed.json';
+import seedJson from './seed.json';
 
 type SeedRow = { key: string; vi: string; en?: string; description?: string };
 const SEED: SeedRow[] = seedJson as SeedRow[];

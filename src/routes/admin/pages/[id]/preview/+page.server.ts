@@ -1,6 +1,6 @@
 import { requireAdmin } from '$lib/server/admin-guard';
 import { getPagePreviewById } from '$lib/server/cms/admin';
-import { getI18nSnapshot } from '$lib/server/translations';
+import { getI18nSnapshot } from '$lib/server/i18n';
 import { error } from '@sveltejs/kit';
 
 export async function load(event) {

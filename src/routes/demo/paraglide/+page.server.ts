@@ -1,5 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { getI18nSnapshot } from '$lib/server/translations';
+import { getI18nSnapshot } from '$lib/server/i18n';
 import { localizedHref } from '$lib/i18n/url';
 import type { Actions } from './$types';
 
