@@ -1,5 +1,5 @@
 // Server-side site settings: DB persistence + in-memory cache + typed
-// accessors. The shape of each setting is declared in settings-registry.ts;
+// accessors. The shape of each setting is declared in ./registry.ts;
 // this module is the runtime that backs it.
 //
 // Behavior:
@@ -12,16 +12,16 @@
 //                          the appearance + theme settings.
 
 import { eq, inArray } from 'drizzle-orm';
-import { db } from './db';
-import { siteSetting } from './db/schema';
+import { db } from '../db';
+import { siteSetting } from '../db/schema';
 import {
 	SETTING_DEFS,
 	SETTING_DEF_BY_KEY,
 	type SettingDef,
 	type SettingValue
-} from './settings-registry';
+} from './registry';
 
-export type { SettingValue } from './settings-registry';
+export type { SettingValue } from './registry';
 
 export type SettingsMap = Record<string, SettingValue>;
 

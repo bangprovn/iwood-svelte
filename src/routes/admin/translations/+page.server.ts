@@ -1,5 +1,5 @@
 import { fail } from '@sveltejs/kit';
-import { requireAdmin } from '$lib/server/admin-guard';
+import { requireAdmin } from '$lib/server/auth';
 import { deleteTranslationKey, listLocales, listTranslationKeys } from '$lib/server/i18n/admin';
 import type { Actions, PageServerLoad } from './$types';
 

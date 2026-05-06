@@ -1,7 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { APIError } from 'better-auth/api';
 import { auth } from '$lib/server/auth';
-import { ensureAdminRole, isAllowlistedEmail } from '$lib/server/admin-guard';
+import { ensureAdminRole, isAllowlistedEmail } from '$lib/server/auth';
 import { eq } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import { user as userTable } from '$lib/server/db/schema';

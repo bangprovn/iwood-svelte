@@ -1,4 +1,4 @@
-import { requireAdmin } from '$lib/server/admin-guard';
+import { requireAdmin } from '$lib/server/auth';
 import { listPages, deletePage, duplicatePage } from '$lib/server/cms/admin';
 
 export async function load(event) {

@@ -1,6 +1,6 @@
 import { error, fail } from '@sveltejs/kit';
 import { asc } from 'drizzle-orm';
-import { requireAdmin } from '$lib/server/admin-guard';
+import { requireAdmin } from '$lib/server/auth';
 import {
 	getMenu,
 	MENU_ITEM_KINDS,

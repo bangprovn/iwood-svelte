@@ -5,7 +5,7 @@ import {
 	projects,
 	projectCategories,
 	posts
-} from '$lib/server/seed-fixtures';
+} from '$lib/server/db/fixtures';
 import { db } from './index';
 import * as s from './schema';
 

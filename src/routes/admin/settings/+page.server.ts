@@ -1,5 +1,5 @@
 import { fail } from '@sveltejs/kit';
-import { requireAdmin } from '$lib/server/admin-guard';
+import { requireAdmin } from '$lib/server/auth';
 import {
 	GROUP_DESCRIPTIONS,
 	GROUP_LABELS,
@@ -7,7 +7,7 @@ import {
 	SETTING_DEFS,
 	type SettingDef,
 	type SettingGroup
-} from '$lib/server/settings-registry';
+} from '$lib/server/settings';
 import { getSettings, parseAndValidate, setMany } from '$lib/server/settings';
 import type { Actions, PageServerLoad } from './$types';
 

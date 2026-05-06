@@ -1,5 +1,5 @@
 import { error, redirect } from '@sveltejs/kit';
-import { requireAdmin } from '$lib/server/admin-guard';
+import { requireAdmin } from '$lib/server/auth';
 import { importLocaleDictionary } from '$lib/server/i18n/admin';
 import type { RequestHandler } from './$types';
 

@@ -1,8 +1,8 @@
 import { error, redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { env } from '$env/dynamic/private';
-import { db } from './db';
-import { user } from './db/schema';
+import { db } from '../db';
+import { user } from '../db/schema';
 import type { RequestEvent } from '@sveltejs/kit';
 
 const adminEmails = new Set(

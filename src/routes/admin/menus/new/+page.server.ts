@@ -1,5 +1,5 @@
 import { fail, redirect } from '@sveltejs/kit';
-import { requireAdmin } from '$lib/server/admin-guard';
+import { requireAdmin } from '$lib/server/auth';
 import { createMenu, MENU_LOCATIONS } from '$lib/server/cms/admin';
 import type { Actions, PageServerLoad } from './$types';
 

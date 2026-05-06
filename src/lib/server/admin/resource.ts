@@ -6,7 +6,7 @@ import {
 	type RequestEvent
 } from '@sveltejs/kit';
 import type { ZodType } from 'zod';
-import { requireAdmin } from '$lib/server/admin-guard';
+import { requireAdmin } from '$lib/server/auth';
 import { parseForm, type FormFailState } from './parse-form';
 
 /**

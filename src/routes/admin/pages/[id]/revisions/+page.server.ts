@@ -1,4 +1,4 @@
-import { requireAdmin } from '$lib/server/admin-guard';
+import { requireAdmin } from '$lib/server/auth';
 import { getPage, listRevisions, revertToRevision } from '$lib/server/cms/admin';
 import { error, fail } from '@sveltejs/kit';
 

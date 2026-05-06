@@ -6,7 +6,7 @@ import type { Handle } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { db } from '$lib/server/db';
 import { user as userTable } from '$lib/server/db/schema';
-import { ensureAdminRole } from '$lib/server/admin-guard';
+import { ensureAdminRole } from '$lib/server/auth';
 import { getI18nSnapshot } from '$lib/server/i18n';
 import { getSettings } from '$lib/server/settings';
 import { pickLocaleFromPath } from '$lib/i18n/url';

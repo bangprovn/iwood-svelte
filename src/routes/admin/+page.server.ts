@@ -1,4 +1,4 @@
-import { requireAdmin } from '$lib/server/admin-guard';
+import { requireAdmin } from '$lib/server/auth';
 import { dashboardCounts, listContactsAdmin, listQuotesAdmin } from '$lib/server/cms/admin';
 import type { PageServerLoad } from './$types';
 

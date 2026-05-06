@@ -1,6 +1,6 @@
 import { error, json } from '@sveltejs/kit';
 import { storage } from '$lib/server/storage';
-import { requireAdmin } from '$lib/server/admin-guard';
+import { requireAdmin } from '$lib/server/auth';
 import type { RequestHandler } from './$types';
 
 const MAX_BYTES = 8 * 1024 * 1024; // 8 MB
