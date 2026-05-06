@@ -15,11 +15,10 @@
 	});
 </script>
 
-<header class="adm-header">
-	<div>
-		<h1>Edit showroom</h1>
-		<p>{data.row.city}</p>
-	</div>
-</header>
-
-<ShowroomForm mode="edit" values={form?.values ?? initial} errors={form?.errors ?? {}} />
+<ShowroomForm
+	mode="edit"
+	title="Edit showroom"
+	subtitle={data.row.city}
+	values={form?.values ?? initial}
+	errors={form?.errors ?? {}}
+/>

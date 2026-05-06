@@ -1,27 +1,30 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { useI18n, t } from '$lib/i18n';
 	import type { ActionData, PageData } from './$types';
 
 	let { form, data }: { form: ActionData; data: PageData } = $props();
 
+	const i18n = useI18n();
+
 	const errMessage = $derived(
-		form?.message ?? (data.error === 'forbidden' ? 'You are signed in but not an admin.' : null)
+		form?.message ?? (data.error === 'forbidden' ? t($i18n, 'admin.login.err_forbidden') : null)
 	);
 </script>
 
 <div class="login-wrap">
 	<div class="login-card">
 		<span class="red-wedge"></span>
-		<span class="eyebrow">Admin console</span>
+		<span class="eyebrow">{t($i18n, 'admin.login.eyebrow')}</span>
 		<div class="brand"><span class="i">i</span>Wood</div>
-		<p class="sub">Sign in to manage catalog &amp; content.</p>
+		<p class="sub">{t($i18n, 'admin.login.sub')}</p>
 
 		{#if errMessage}<p class="err">{errMessage}</p>{/if}
 
 		<form method="post" action="?/signIn" use:enhance class="login-form">
 			<input type="hidden" name="next" value={data.next} />
 			<label>
-				<span>Email</span>
+				<span>{t($i18n, 'admin.login.email')}</span>
 				<input
 					type="email"
 					name="email"
@@ -31,10 +34,10 @@
 				/>
 			</label>
 			<label>
-				<span>Password</span>
+				<span>{t($i18n, 'admin.login.password')}</span>
 				<input type="password" name="password" autocomplete="current-password" required />
 			</label>
-			<button type="submit">Sign in</button>
+			<button type="submit">{t($i18n, 'admin.login.submit')}</button>
 		</form>
 	</div>
 </div>

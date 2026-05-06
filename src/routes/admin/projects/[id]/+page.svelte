@@ -18,15 +18,10 @@
 	});
 </script>
 
-<header class="adm-header">
-	<div>
-		<h1>Edit project</h1>
-		<p>{data.row.nameVi}</p>
-	</div>
-</header>
-
 <ProjectForm
 	mode="edit"
+	title="Edit project"
+	subtitle={data.row.nameVi}
 	categories={data.categories}
 	products={data.products}
 	values={form?.values ?? initial}

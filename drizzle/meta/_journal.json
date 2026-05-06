@@ -8,6 +8,41 @@
       "when": 1777872031007,
       "tag": "0000_nasty_spirit",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1777914428747,
+      "tag": "0001_workable_roulette",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1777921000000,
+      "tag": "0002_page_seo_and_route_uniq",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1777989600000,
+      "tag": "0003_page_drafts_and_revisions",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1778000000000,
+      "tag": "0004_site_settings",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1778100000000,
+      "tag": "0005_menus",
+      "breakpoints": true
     }
   ]
 }

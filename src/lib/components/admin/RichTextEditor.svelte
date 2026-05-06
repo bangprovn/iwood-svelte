@@ -7,13 +7,15 @@
 		minHeight?: string;
 		placeholder?: string;
 		required?: boolean;
+		oninput?: (html: string) => void;
 	};
 	let {
 		name,
 		value = $bindable(''),
 		minHeight = '220px',
 		placeholder = 'Start writing…',
-		required = false
+		required = false,
+		oninput
 	}: Props = $props();
 
 	let editor: HTMLDivElement | undefined = $state();
@@ -36,7 +38,10 @@
 	function syncFromEditor() {
 		if (!editor) return;
 		const html = editor.innerHTML;
-		if (html !== (value ?? '')) value = html;
+		if (html !== (value ?? '')) {
+			value = html;
+			oninput?.(html);
+		}
 	}
 
 	function exec(cmd: string, arg?: string) {
@@ -203,7 +208,12 @@
 		<textarea
 			class="rte-source"
 			style:min-height={minHeight}
-			bind:value
+			value={value ?? ''}
+			oninput={(e) => {
+				const v = (e.currentTarget as HTMLTextAreaElement).value;
+				value = v;
+				oninput?.(v);
+			}}
 			spellcheck={false}
 		></textarea>
 	{/if}

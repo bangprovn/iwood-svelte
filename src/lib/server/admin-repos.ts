@@ -3,6 +3,7 @@
 
 import { and, asc, count, desc, eq, like, or } from 'drizzle-orm';
 import { db } from './db';
+import { auth } from './auth';
 import {
 	category,
 	contactMessage,
@@ -588,6 +589,45 @@ export async function listUsersAdmin() {
 
 export async function setUserRole(id: string, role: 'user' | 'admin') {
 	await db.update(user).set({ role }).where(eq(user.id, id));
+}
+
+export async function updateUserName(id: string, name: string) {
+	await db.update(user).set({ name }).where(eq(user.id, id));
+}
+
+export async function deleteUserAdmin(id: string) {
+	// session + account rows cascade via FK on userId.
+	await db.delete(user).where(eq(user.id, id));
+}
+
+export type CreateUserInput = {
+	email: string;
+	name: string;
+	password: string;
+	role: 'user' | 'admin';
+};
+
+export async function createUserAdmin(input: CreateUserInput) {
+	// Use better-auth's sign-up flow so the password is hashed via its scrypt
+	// config and an `account` row is created with the credential provider.
+	// We then upgrade the role if requested.
+	const result = await auth.api.signUpEmail({
+		body: { email: input.email, name: input.name, password: input.password },
+		asResponse: false
+	});
+	const id = (result as { user?: { id?: string } } | undefined)?.user?.id;
+	if (!id) throw new Error('Sign-up did not return a user id');
+	if (input.role === 'admin') {
+		await db.update(user).set({ role: 'admin' }).where(eq(user.id, id));
+	}
+	return { id };
+}
+
+export async function adminResetPassword(id: string, newPassword: string) {
+	// Goes through better-auth's internal adapter so the password is hashed
+	// with the same algorithm used at sign-up / change-password.
+	const ctx = await auth.$context;
+	await ctx.internalAdapter.updatePassword(id, newPassword);
 }
 
 // ===========================================================================

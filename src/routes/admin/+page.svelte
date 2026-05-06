@@ -1,35 +1,40 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
+	import { useI18n, t } from '$lib/i18n';
 	import type { PageData } from './$types';
 	let { data }: { data: PageData } = $props();
 
-	const stats = [
-		{ key: 'categories', label: 'Categories', href: '/admin/categories', icon: 'layers' },
-		{ key: 'products', label: 'Products', href: '/admin/products', icon: 'box' },
-		{
-			key: 'projectCategories',
-			label: 'Project categories',
-			href: '/admin/project-categories',
-			icon: 'tag'
-		},
-		{ key: 'projects', label: 'Projects', href: '/admin/projects', icon: 'home' },
-		{ key: 'posts', label: 'Posts', href: '/admin/posts', icon: 'list' },
-		{ key: 'showrooms', label: 'Showrooms', href: '/admin/showrooms', icon: 'map' },
-		{ key: 'quotes', label: 'Quotes', href: '/admin/quotes', icon: 'quote' },
-		{ key: 'contacts', label: 'Contact messages', href: '/admin/contacts', icon: 'chat' },
-		{ key: 'newsletter', label: 'Newsletter', href: '/admin/newsletter', icon: 'mail' }
-	] as const;
+	const i18n = useI18n();
 
-	function fmtDate(t: Date | string) {
-		const d = typeof t === 'string' ? new Date(t) : t;
-		return d.toLocaleString();
+	const stats = $derived(
+		[
+			{ key: 'categories', labelKey: 'admin.nav.categories', href: '/admin/categories', icon: 'layers' },
+			{ key: 'products', labelKey: 'admin.nav.products', href: '/admin/products', icon: 'box' },
+			{
+				key: 'projectCategories',
+				labelKey: 'admin.nav.project_categories',
+				href: '/admin/project-categories',
+				icon: 'tag'
+			},
+			{ key: 'projects', labelKey: 'admin.nav.projects', href: '/admin/projects', icon: 'home' },
+			{ key: 'posts', labelKey: 'admin.nav.posts', href: '/admin/posts', icon: 'list' },
+			{ key: 'showrooms', labelKey: 'admin.nav.showrooms', href: '/admin/showrooms', icon: 'map' },
+			{ key: 'quotes', labelKey: 'admin.nav.quotes', href: '/admin/quotes', icon: 'quote' },
+			{ key: 'contacts', labelKey: 'admin.nav.contacts', href: '/admin/contacts', icon: 'chat' },
+			{ key: 'newsletter', labelKey: 'admin.nav.newsletter', href: '/admin/newsletter', icon: 'mail' }
+		] as const
+	);
+
+	function fmtDate(time: Date | string) {
+		const d = typeof time === 'string' ? new Date(time) : time;
+		return d.toLocaleString($i18n.locale);
 	}
 </script>
 
 <header class="adm-header">
 	<div>
-		<h1>Dashboard</h1>
-		<p>At-a-glance counts and the latest leads.</p>
+		<h1>{t($i18n, 'admin.dashboard.title')}</h1>
+		<p>{t($i18n, 'admin.dashboard.sub')}</p>
 	</div>
 </header>
 
@@ -38,11 +43,11 @@
 		<a href={s.href} class="stat" style="display:block; color:inherit">
 			<div class="lbl">
 				<Icon name={s.icon} size={14} stroke={1.75} />
-				<span>{s.label}</span>
+				<span>{t($i18n, s.labelKey)}</span>
 			</div>
 			<div class="num">{data.counts[s.key]}</div>
 			<span style="color: var(--accent); font-size: var(--fs-xxs); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;">
-				Manage →
+				{t($i18n, 'admin.dashboard.manage')}
 			</span>
 		</a>
 	{/each}
@@ -50,13 +55,20 @@
 
 <div style="display:grid; gap:18px; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr))">
 	<section class="adm-card">
-		<h2>Recent quotes</h2>
+		<h2>{t($i18n, 'admin.dashboard.recent_quotes')}</h2>
 		{#if data.recentQuotes.length === 0}
-			<p style="color: var(--fg-3); font-size: var(--fs-sm); margin:0">No quotes yet.</p>
+			<p style="color: var(--fg-3); font-size: var(--fs-sm); margin:0">
+				{t($i18n, 'admin.dashboard.no_quotes')}
+			</p>
 		{:else}
 			<table class="adm-table">
 				<thead>
-					<tr><th>When</th><th>Name</th><th>Phone</th><th>Status</th></tr>
+					<tr>
+						<th>{t($i18n, 'admin.dashboard.col_when')}</th>
+						<th>{t($i18n, 'admin.dashboard.col_name')}</th>
+						<th>{t($i18n, 'admin.dashboard.col_phone')}</th>
+						<th>{t($i18n, 'admin.dashboard.col_status')}</th>
+					</tr>
 				</thead>
 				<tbody>
 					{#each data.recentQuotes as q (q.id)}
@@ -70,19 +82,26 @@
 				</tbody>
 			</table>
 			<p style="margin: 14px 0 0">
-				<a href="/admin/quotes" class="adm-btn ghost sm">All quotes →</a>
+				<a href="/admin/quotes" class="adm-btn ghost sm">{t($i18n, 'admin.dashboard.all_quotes')}</a>
 			</p>
 		{/if}
 	</section>
 
 	<section class="adm-card">
-		<h2>Recent contact messages</h2>
+		<h2>{t($i18n, 'admin.dashboard.recent_contacts')}</h2>
 		{#if data.recentContacts.length === 0}
-			<p style="color: var(--fg-3); font-size: var(--fs-sm); margin:0">No messages yet.</p>
+			<p style="color: var(--fg-3); font-size: var(--fs-sm); margin:0">
+				{t($i18n, 'admin.dashboard.no_contacts')}
+			</p>
 		{:else}
 			<table class="adm-table">
 				<thead>
-					<tr><th>When</th><th>Name</th><th>Subject</th><th>Status</th></tr>
+					<tr>
+						<th>{t($i18n, 'admin.dashboard.col_when')}</th>
+						<th>{t($i18n, 'admin.dashboard.col_name')}</th>
+						<th>{t($i18n, 'admin.dashboard.col_subject')}</th>
+						<th>{t($i18n, 'admin.dashboard.col_status')}</th>
+					</tr>
 				</thead>
 				<tbody>
 					{#each data.recentContacts as c (c.id)}
@@ -96,7 +115,9 @@
 				</tbody>
 			</table>
 			<p style="margin: 14px 0 0">
-				<a href="/admin/contacts" class="adm-btn ghost sm">All messages →</a>
+				<a href="/admin/contacts" class="adm-btn ghost sm"
+					>{t($i18n, 'admin.dashboard.all_contacts')}</a
+				>
 			</p>
 		{/if}
 	</section>

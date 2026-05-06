@@ -1,5 +1,5 @@
 import { sql, relations } from 'drizzle-orm';
-import { index, integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { index, integer, primaryKey, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core';
 
 // --- Demo / sandbox table (kept from template) -------------------------------
 
@@ -297,3 +297,195 @@ export const quoteItemRelations = relations(quoteItem, ({ one }) => ({
 }));
 
 export * from './auth.schema';
+
+// --- Page Layout Builder ------------------------------------------------
+
+export const page = sqliteTable(
+	'page',
+	{
+		id: text('id')
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		slug: text('slug').notNull().unique(),
+		type: text('type', { enum: ['custom', 'override'] }).notNull().default('custom'),
+		routePattern: text('route_pattern'),
+		titleVi: text('title_vi').notNull(),
+		titleEn: text('title_en').notNull(),
+		metaDescVi: text('meta_desc_vi'),
+		metaDescEn: text('meta_desc_en'),
+		ogImage: text('og_image'),
+		canonicalUrl: text('canonical_url'),
+		robots: text('robots').notNull().default('index,follow'),
+		publishedAt: integer('published_at', { mode: 'timestamp' }),
+		publishedSnapshot: text('published_snapshot'),
+		isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+		sortOrder: integer('sort_order').notNull().default(0),
+		createdAt: integer('created_at', { mode: 'timestamp' })
+			.notNull()
+			.default(sql`(unixepoch())`),
+		updatedAt: integer('updated_at', { mode: 'timestamp' })
+			.notNull()
+			.default(sql`(unixepoch())`)
+	},
+	(t) => [
+		uniqueIndex('page_override_route_uniq')
+			.on(t.routePattern)
+			.where(sql`type = 'override' AND route_pattern IS NOT NULL`)
+	]
+);
+
+export const pageBlock = sqliteTable(
+	'page_block',
+	{
+		id: text('id')
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		pageId: text('page_id')
+			.notNull()
+			.references(() => page.id, { onDelete: 'cascade' }),
+		type: text('type').notNull(),
+		sortOrder: integer('sort_order').notNull().default(0),
+		isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+		globalSettings: text('global_settings').notNull().default('{}')
+	},
+	(t) => [index('page_block_page_idx').on(t.pageId)]
+);
+
+export const pageBlockContent = sqliteTable(
+	'page_block_content',
+	{
+		id: integer('id').primaryKey({ autoIncrement: true }),
+		blockId: text('block_id')
+			.notNull()
+			.references(() => pageBlock.id, { onDelete: 'cascade' }),
+		locale: text('locale').notNull(),
+		content: text('content').notNull().default('{}')
+	},
+	(t) => [
+		index('page_block_content_block_idx').on(t.blockId),
+		index('page_block_content_locale_idx').on(t.locale)
+	]
+);
+
+export const pageRevision = sqliteTable(
+	'page_revision',
+	{
+		id: integer('id').primaryKey({ autoIncrement: true }),
+		pageId: text('page_id')
+			.notNull()
+			.references(() => page.id, { onDelete: 'cascade' }),
+		snapshot: text('snapshot').notNull(),
+		publishedAt: integer('published_at', { mode: 'timestamp' })
+			.notNull()
+			.default(sql`(unixepoch())`),
+		publishedBy: text('published_by'),
+		note: text('note')
+	},
+	(t) => [index('page_revision_page_idx').on(t.pageId)]
+);
+
+// --- Relations (must come after all tables) ----------------------------
+
+export const pageRelations = relations(page, ({ many }) => ({
+	blocks: many(pageBlock)
+}));
+
+export const pageBlockRelations = relations(pageBlock, ({ one, many }) => ({
+	page: one(page, {
+		fields: [pageBlock.pageId],
+		references: [page.id]
+	}),
+	contents: many(pageBlockContent)
+}));
+
+export const pageBlockContentRelations = relations(pageBlockContent, ({ one }) => ({
+	block: one(pageBlock, {
+		fields: [pageBlockContent.blockId],
+		references: [pageBlock.id]
+	})
+}));
+
+// --- Site settings (WordPress-style key/value bag) ---------------------
+// Flat options table backing /admin/settings. Schema is intentionally
+// generic; the typed shape lives in src/lib/server/settings-registry.ts.
+// `value` holds JSON.stringify'd content (string, number, boolean, object).
+// `is_public` gates whether the value is exposed to the browser via
+// +layout.server.ts. `group` matches a registry group (appearance, theme,
+// system, seo, integrations, social).
+
+export const siteSetting = sqliteTable(
+	'site_setting',
+	{
+		key: text('key').primaryKey(),
+		group: text('group').notNull(),
+		value: text('value').notNull().default(''),
+		isPublic: integer('is_public', { mode: 'boolean' }).notNull().default(false),
+		updatedAt: integer('updated_at', { mode: 'timestamp' })
+			.notNull()
+			.default(sql`(unixepoch())`)
+	},
+	(t) => [index('site_setting_group_idx').on(t.group)]
+);
+
+// --- Menus (WordPress-style customizable navigation) -------------------
+// A `menu` is a named container assigned to a slot ("location") on the
+// public site (e.g. `primary`, `footer`). `menu_item` is a tree of nodes
+// (parent_id self-ref) covering custom links, refs to internal entities
+// (page/category/post/...), and special mega-menu nodes whose extras live
+// in the `data` JSON column.
+
+export const menu = sqliteTable(
+	'menu',
+	{
+		id: text('id')
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		slug: text('slug').notNull().unique(),
+		name: text('name').notNull(),
+		location: text('location'),
+		isActive: integer('is_active', { mode: 'boolean' }).notNull().default(true),
+		createdAt: integer('created_at', { mode: 'timestamp' })
+			.notNull()
+			.default(sql`(unixepoch())`),
+		updatedAt: integer('updated_at', { mode: 'timestamp' })
+			.notNull()
+			.default(sql`(unixepoch())`)
+	},
+	(t) => [uniqueIndex('menu_location_uniq').on(t.location).where(sql`location IS NOT NULL`)]
+);
+
+export const menuItem = sqliteTable(
+	'menu_item',
+	{
+		id: text('id')
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		menuId: text('menu_id')
+			.notNull()
+			.references(() => menu.id, { onDelete: 'cascade' }),
+		parentId: text('parent_id'),
+		sortOrder: integer('sort_order').notNull().default(0),
+		// Kinds: 'custom' | 'page' | 'category' | 'project_category' | 'post' |
+		// 'showroom' | 'route' | 'mega_column' | 'mega_promo' | 'mega_featured'
+		kind: text('kind').notNull().default('custom'),
+		refId: text('ref_id'),
+		url: text('url'),
+		labelVi: text('label_vi').notNull().default(''),
+		labelEn: text('label_en'),
+		target: text('target').notNull().default('_self'),
+		isMega: integer('is_mega', { mode: 'boolean' }).notNull().default(false),
+		data: text('data').notNull().default('{}')
+	},
+	(t) => [
+		index('menu_item_menu_idx').on(t.menuId),
+		index('menu_item_parent_idx').on(t.parentId)
+	]
+);
+
+export const menuRelations = relations(menu, ({ many }) => ({
+	items: many(menuItem)
+}));
+
+export const menuItemRelations = relations(menuItem, ({ one }) => ({
+	menu: one(menu, { fields: [menuItem.menuId], references: [menu.id] })
+}));

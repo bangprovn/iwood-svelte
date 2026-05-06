@@ -13,11 +13,10 @@
 	});
 </script>
 
-<header class="adm-header">
-	<div>
-		<h1>Edit locale</h1>
-		<p>{data.row.label} (<code>{data.row.code}</code>)</p>
-	</div>
-</header>
-
-<LocaleForm mode="edit" values={form?.values ?? initial} errors={form?.errors ?? {}} />
+<LocaleForm
+	mode="edit"
+	title="Edit locale"
+	subtitle={`${data.row.label} (${data.row.code})`}
+	values={form?.values ?? initial}
+	errors={form?.errors ?? {}}
+/>

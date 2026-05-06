@@ -4,15 +4,10 @@
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 </script>
 
-<header class="adm-header">
-	<div>
-		<h1>New product</h1>
-		<p>Add a SKU to the catalog.</p>
-	</div>
-</header>
-
 <ProductForm
 	mode="new"
+	title="New product"
+	subtitle="Add a SKU to the catalog."
 	categories={data.categories}
 	values={form?.values ?? {}}
 	errors={form?.errors ?? {}}

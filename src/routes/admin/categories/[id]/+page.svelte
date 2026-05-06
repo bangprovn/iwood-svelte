@@ -15,11 +15,10 @@
 	});
 </script>
 
-<header class="adm-header">
-	<div>
-		<h1>Edit category</h1>
-		<p>{data.row.nameVi}</p>
-	</div>
-</header>
-
-<CategoryForm mode="edit" values={form?.values ?? initial} errors={form?.errors ?? {}} />
+<CategoryForm
+	mode="edit"
+	title="Edit category"
+	subtitle={data.row.nameVi}
+	values={form?.values ?? initial}
+	errors={form?.errors ?? {}}
+/>

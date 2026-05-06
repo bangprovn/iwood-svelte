@@ -6,21 +6,43 @@
 	import { inquiry } from '$lib/state/inquiry.svelte';
 	import { useI18n, t, localizedHref } from '$lib/i18n';
 	import type { CategoryDTO, ProductDTO } from '$lib/types';
+	import type { ResolvedNavItem } from '$lib/server/repos/menu.repo';
 
 	const i18n = useI18n();
 	const PHONE = '0915 000 000';
 
+	type AuthUser = { id: string; name: string; email: string; role: string };
 	type Props = {
 		dark?: boolean;
 		navCategories: CategoryDTO[];
 		megaFeatured: ProductDTO[];
+		primaryNav?: ResolvedNavItem[];
+		user?: AuthUser | null;
 	};
-	let { dark = false, navCategories, megaFeatured }: Props = $props();
+	let {
+		dark = false,
+		navCategories,
+		megaFeatured,
+		primaryNav = [],
+		user = null
+	}: Props = $props();
 
 	let scrolled = $state(false);
-	let megaOpen = $state(false);
+	let megaOpenId = $state<string | null>(null);
 	let mobileNavOpen = $state(false);
 	let langOpen = $state(false);
+	let acctOpen = $state(false);
+
+	// Fallback links shown when no menu has been configured yet.
+	const fallbackNav: ResolvedNavItem[] = [
+		{ id: 'home', href: '/', label: t($i18n, 'nav.home'), target: '_self', kind: 'route', children: [], isMega: false },
+		{ id: 'about', href: '/about', label: t($i18n, 'nav.about'), target: '_self', kind: 'route', children: [], isMega: false },
+		{ id: 'products', href: '/products', label: t($i18n, 'nav.products'), target: '_self', kind: 'route', children: [], isMega: false },
+		{ id: 'projects', href: '/projects', label: t($i18n, 'nav.projects'), target: '_self', kind: 'route', children: [], isMega: false },
+		{ id: 'news', href: '/news', label: t($i18n, 'nav.news'), target: '_self', kind: 'route', children: [], isMega: false },
+		{ id: 'contact', href: '/contact', label: t($i18n, 'nav.contact'), target: '_self', kind: 'route', children: [], isMega: false }
+	];
+	const navItems = $derived(primaryNav.length > 0 ? primaryNav : fallbackNav);
 
 	$effect(() => {
 		const onScroll = () => {
@@ -48,9 +70,32 @@
 		path;
 		mobileNavOpen = false;
 		langOpen = false;
+		acctOpen = false;
+		megaOpenId = null;
 	});
-	const isActive = (target: string) =>
-		path === target || (target !== '/' && path.startsWith(target));
+
+	$effect(() => {
+		if (!acctOpen) return;
+		const onDocClick = (e: MouseEvent) => {
+			const target = e.target as HTMLElement;
+			if (!target.closest('.acct')) acctOpen = false;
+		};
+		const onKey = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') acctOpen = false;
+		};
+		document.addEventListener('mousedown', onDocClick);
+		document.addEventListener('keydown', onKey);
+		return () => {
+			document.removeEventListener('mousedown', onDocClick);
+			document.removeEventListener('keydown', onKey);
+		};
+	});
+	const isActive = (target: string) => {
+		if (!target) return false;
+		const clean = target.split('?')[0].split('#')[0];
+		if (clean === '/') return path === '/';
+		return path === clean || path.startsWith(clean + '/');
+	};
 
 	const inquiryCount = $derived(inquiry.lineCount);
 
@@ -74,6 +119,49 @@
 				/>
 				{t($i18n, 'topbar.showrooms')}
 			</a>
+			<span style="opacity: 0.4;">·</span>
+			{#if user}
+				<div class="acct" style="position: relative; display: inline-block;">
+					<button
+						type="button"
+						onclick={() => (acctOpen = !acctOpen)}
+						aria-haspopup="menu"
+						aria-expanded={acctOpen}
+						style="background: none; border: none; cursor: pointer; font: inherit; color: inherit; padding: 0;"
+					>
+						<Icon
+							name="user"
+							size={12}
+							style="display:inline; margin-right:4px; vertical-align:middle;"
+						/>
+						{user.name?.split(' ')[0] || user.email.split('@')[0]}
+					</button>
+					{#if acctOpen}
+						<div class="acct-menu" role="menu">
+							<a href="/account" role="menuitem" onclick={() => (acctOpen = false)}>
+								{t($i18n, 'auth.account')}
+							</a>
+							{#if user.role === 'admin'}
+								<a href="/admin" role="menuitem" onclick={() => (acctOpen = false)}>Admin</a>
+							{/if}
+							<form method="post" action="/login?/signOut" style="margin:0">
+								<button type="submit" role="menuitem">{t($i18n, 'auth.sign_out')}</button>
+							</form>
+						</div>
+					{/if}
+				</div>
+			{:else}
+				<a href="/login">
+					<Icon
+						name="user"
+						size={12}
+						style="display:inline; margin-right:4px; vertical-align:middle;"
+					/>
+					{t($i18n, 'auth.sign_in')}
+				</a>
+				<span style="opacity: 0.4;">·</span>
+				<a href="/register">{t($i18n, 'auth.register')}</a>
+			{/if}
 			<span style="opacity: 0.4;">·</span>
 			<div style="position: relative; display: inline-block;">
 				<button
@@ -109,27 +197,29 @@
 	<div class="header-row" style="position: relative;">
 		<Logo light={dark} />
 		<nav class="nav">
-			<a class={'nav-link ' + (path === '/' ? 'active' : '')} href="/">{t($i18n, 'nav.home')}</a>
-			<a class={'nav-link ' + (isActive('/about') ? 'active' : '')} href="/about"
-				>{t($i18n, 'nav.about')}</a
-			>
-			<a
-				class={'nav-link ' + (isActive('/products') || isActive('/product') ? 'active' : '')}
-				href="/products"
-				onmouseenter={() => (megaOpen = true)}
-				aria-expanded={megaOpen}
-			>
-				{t($i18n, 'nav.products')} <Icon name="chev" size={14} class="chev" />
-			</a>
-			<a class={'nav-link ' + (isActive('/projects') ? 'active' : '')} href="/projects"
-				>{t($i18n, 'nav.projects')}</a
-			>
-			<a class={'nav-link ' + (isActive('/news') ? 'active' : '')} href="/news"
-				>{t($i18n, 'nav.news')}</a
-			>
-			<a class={'nav-link ' + (isActive('/contact') ? 'active' : '')} href="/contact"
-				>{t($i18n, 'nav.contact')}</a
-			>
+			{#each navItems as item (item.id)}
+				{#if item.isMega || item.children.length > 0}
+					<a
+						class={'nav-link ' + (isActive(item.href) ? 'active' : '')}
+						href={item.href || '#'}
+						target={item.target}
+						rel={item.target === '_blank' ? 'noopener' : undefined}
+						onmouseenter={() => (megaOpenId = item.id)}
+						aria-expanded={megaOpenId === item.id}
+					>
+						{item.label} <Icon name="chev" size={14} class="chev" />
+					</a>
+				{:else}
+					<a
+						class={'nav-link ' + (isActive(item.href) ? 'active' : '')}
+						href={item.href || '#'}
+						target={item.target}
+						rel={item.target === '_blank' ? 'noopener' : undefined}
+					>
+						{item.label}
+					</a>
+				{/if}
+			{/each}
 		</nav>
 		<div class="header-cta">
 			<button class="icon-btn search-btn" aria-label={t($i18n, 'header.search')}>
@@ -158,38 +248,46 @@
 				<Icon name={mobileNavOpen ? 'close' : 'menu'} size={22} />
 			</button>
 		</div>
-		<MegaMenu
-			open={megaOpen}
-			onClose={() => (megaOpen = false)}
-			categories={navCategories}
-			featured={megaFeatured}
-		/>
+		{#each navItems as item (item.id)}
+			{#if item.isMega || item.children.length > 0}
+				<MegaMenu
+					open={megaOpenId === item.id}
+					onClose={() => (megaOpenId = null)}
+					{item}
+					fallbackCategories={navCategories}
+					fallbackFeatured={megaFeatured}
+				/>
+			{/if}
+		{/each}
 	</div>
 
 	{#if mobileNavOpen}
 		<div class="mobile-nav">
-			<a class={'mobile-nav-link ' + (path === '/' ? 'active' : '')} href="/"
-				>{t($i18n, 'nav.home')}</a
-			>
-			<a class={'mobile-nav-link ' + (isActive('/about') ? 'active' : '')} href="/about">
-				{t($i18n, 'nav.about')}
-			</a>
-			<a
-				class={'mobile-nav-link ' +
-					(isActive('/products') || isActive('/product') ? 'active' : '')}
-				href="/products"
-			>
-				{t($i18n, 'nav.products')}
-			</a>
-			<a class={'mobile-nav-link ' + (isActive('/projects') ? 'active' : '')} href="/projects">
-				{t($i18n, 'nav.projects')}
-			</a>
-			<a class={'mobile-nav-link ' + (isActive('/news') ? 'active' : '')} href="/news"
-				>{t($i18n, 'nav.news')}</a
-			>
-			<a class={'mobile-nav-link ' + (isActive('/contact') ? 'active' : '')} href="/contact">
-				{t($i18n, 'nav.contact')}
-			</a>
+			{#each navItems as item (item.id)}
+				<a
+					class={'mobile-nav-link ' + (isActive(item.href) ? 'active' : '')}
+					href={item.href || '#'}
+					target={item.target}
+					rel={item.target === '_blank' ? 'noopener' : undefined}
+				>
+					{item.label}
+				</a>
+				{#if item.isMega && item.mega}
+					{#each item.mega.columns as col, ci (ci)}
+						{#each col.links as link (link.id)}
+							<a class="mobile-nav-sub" href={link.href || '#'} target={link.target}>
+								— {link.label}
+							</a>
+						{/each}
+					{/each}
+				{:else if item.children.length > 0}
+					{#each item.children as child (child.id)}
+						<a class="mobile-nav-sub" href={child.href || '#'} target={child.target}>
+							— {child.label}
+						</a>
+					{/each}
+				{/if}
+			{/each}
 			<a href="/quote" class="btn btn-primary" style="margin-top: 12px; justify-content: center;">
 				{t($i18n, 'cta.request_quote')}
 			</a>
@@ -247,5 +345,48 @@
 	}
 	.mobile-nav-link.active {
 		color: var(--tw-red);
+	}
+	.mobile-nav-sub {
+		padding: 10px 12px 10px 28px;
+		font-size: 13px;
+		color: var(--slate-2);
+		border-bottom: 1px dashed var(--hairline);
+	}
+	:global(.site-header.is-dark) .mobile-nav-sub {
+		color: rgba(255, 255, 255, 0.65);
+		border-bottom-color: rgba(255, 255, 255, 0.06);
+	}
+	.acct-menu {
+		position: absolute;
+		right: 0;
+		top: 100%;
+		margin-top: 4px;
+		background: white;
+		border: 1px solid var(--hairline);
+		border-radius: 6px;
+		box-shadow: var(--shadow-2);
+		z-index: 100;
+		min-width: 160px;
+		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+	}
+	.acct-menu a,
+	.acct-menu button {
+		display: block;
+		width: 100%;
+		text-align: left;
+		padding: 10px 14px;
+		font: inherit;
+		font-size: 13px;
+		color: var(--ink);
+		background: white;
+		border: none;
+		cursor: pointer;
+		text-decoration: none;
+	}
+	.acct-menu a:hover,
+	.acct-menu button:hover {
+		background: var(--bone);
 	}
 </style>

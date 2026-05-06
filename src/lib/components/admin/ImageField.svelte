@@ -5,8 +5,15 @@
 		prefix?: string;
 		label?: string;
 		required?: boolean;
+		oninput?: (value: string) => void;
 	};
-	let { name, value = $bindable(''), prefix = 'misc', label = 'Image', required }: Props = $props();
+	let { name, value = $bindable(''), prefix = 'misc', label, required, oninput }: Props = $props();
+
+	function setValue(v: string) {
+		if (v === value) return;
+		value = v;
+		oninput?.(v);
+	}
 
 	let busy = $state(false);
 	let err = $state<string | null>(null);
@@ -27,7 +34,7 @@
 				return;
 			}
 			const data = (await res.json()) as { url: string };
-			value = data.url;
+			setValue(data.url);
 		} catch (e) {
 			err = e instanceof Error ? e.message : String(e);
 		} finally {
@@ -38,7 +45,9 @@
 </script>
 
 <div class="img-field">
-	<label class="img-label">{label}{#if required}<span class="req">*</span>{/if}</label>
+	{#if label}
+		<label class="img-label">{label}{#if required}<span class="req">*</span>{/if}</label>
+	{/if}
 	<div class="img-row">
 		<div class="img-preview" class:empty={!value}>
 			{#if value}
@@ -51,7 +60,8 @@
 			<input
 				type="text"
 				class="adm-input"
-				bind:value
+				value={value ?? ''}
+				oninput={(e) => setValue((e.currentTarget as HTMLInputElement).value)}
 				placeholder="/uploads/... or paste URL"
 				{required}
 				name={name}
@@ -62,7 +72,7 @@
 					<input type="file" accept="image/*" onchange={onPick} hidden disabled={busy} />
 				</label>
 				{#if value}
-					<button type="button" class="adm-btn ghost" onclick={() => (value = '')}>Clear</button>
+					<button type="button" class="adm-btn ghost" onclick={() => setValue('')}>Clear</button>
 				{/if}
 			</div>
 			{#if err}<p class="img-err">{err}</p>{/if}

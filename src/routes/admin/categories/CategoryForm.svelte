@@ -1,8 +1,11 @@
 <script lang="ts">
 	import ImageField from '$lib/components/admin/ImageField.svelte';
+	import { FormShell, FormSection, FormField, FormRow } from '$lib/components/admin/form';
 
 	type Props = {
 		mode: 'new' | 'edit';
+		title: string;
+		subtitle?: string;
 		values?: {
 			id?: string;
 			nameVi?: string;
@@ -15,15 +18,46 @@
 		};
 		errors?: Record<string, string>;
 	};
-	let { mode, values = {}, errors = {} }: Props = $props();
+	let { mode, title, subtitle, values = {}, errors = {} }: Props = $props();
 	let imageUrl = $state(values.imageUrl ?? '');
 </script>
 
-<div class="adm-card">
-	<form method="post" class="adm-form">
-		<div class="row">
-			<div class="adm-field">
-				<label>ID (slug)</label>
+<FormShell
+	{title}
+	{subtitle}
+	{mode}
+	backHref="/admin/categories"
+	backLabel="Categories"
+>
+	<FormSection title="Names" description="Display names shown across the site.">
+		<FormRow>
+			<FormField label="Vietnamese" required error={errors.nameVi}>
+				<input class="adm-input" name="nameVi" value={values.nameVi ?? ''} required />
+			</FormField>
+			<FormField label="English" required error={errors.nameEn}>
+				<input class="adm-input" name="nameEn" value={values.nameEn ?? ''} required />
+			</FormField>
+		</FormRow>
+		<FormField label="Short blurb" required error={errors.blurb}>
+			<textarea class="adm-textarea" name="blurb" required>{values.blurb ?? ''}</textarea>
+		</FormField>
+	</FormSection>
+
+	<FormSection title="Image" description="Used on category cards and the mega menu.">
+		<ImageField name="imageUrl" bind:value={imageUrl} prefix="categories" required />
+		{#if errors.imageUrl}
+			<p class="adm-field-error">{errors.imageUrl}</p>
+		{/if}
+	</FormSection>
+
+	{#snippet sidebar()}
+		<FormSection title="Identity" dense>
+			<FormField
+				label="ID (slug)"
+				help={mode === 'edit'
+					? 'Used in URLs/lookups. Cannot be changed.'
+					: 'Auto-derived from the English name if blank.'}
+			>
 				<input
 					class="adm-input"
 					name="id"
@@ -31,56 +65,35 @@
 					readonly={mode === 'edit'}
 					placeholder="auto from English name"
 				/>
-				<p class="adm-help">Used in URLs/lookups. Cannot be changed once created.</p>
-			</div>
-			<div class="adm-field">
-				<label>Sort order</label>
-				<input class="adm-input" type="number" name="sortOrder" value={values.sortOrder ?? 0} />
-			</div>
-		</div>
+			</FormField>
+			<FormField label="Sort order" help="Lower appears first.">
+				<input
+					class="adm-input"
+					type="number"
+					name="sortOrder"
+					value={values.sortOrder ?? 0}
+				/>
+			</FormField>
+		</FormSection>
 
-		<div class="row">
-			<div class="adm-field">
-				<label>Name (Vietnamese) *</label>
-				<input class="adm-input" name="nameVi" value={values.nameVi ?? ''} required />
-				{#if errors.nameVi}<p class="adm-help" style="color:var(--danger)">{errors.nameVi}</p>{/if}
-			</div>
-			<div class="adm-field">
-				<label>Name (English) *</label>
-				<input class="adm-input" name="nameEn" value={values.nameEn ?? ''} required />
-				{#if errors.nameEn}<p class="adm-help" style="color:var(--danger)">{errors.nameEn}</p>{/if}
-			</div>
-		</div>
-
-		<div class="adm-field">
-			<label>Short blurb *</label>
-			<textarea class="adm-textarea" name="blurb" required>{values.blurb ?? ''}</textarea>
-			{#if errors.blurb}<p class="adm-help" style="color:var(--danger)">{errors.blurb}</p>{/if}
-		</div>
-
-		<div class="row">
-			<div class="adm-field">
-				<label>Price from (VND) *</label>
-				<input class="adm-input" type="number" name="priceFrom" value={values.priceFrom ?? 0} required />
-			</div>
-			<div class="adm-field">
-				<label>Display product count</label>
+		<FormSection title="Catalog" dense>
+			<FormField label="Price from (VND)" required error={errors.priceFrom}>
+				<input
+					class="adm-input"
+					type="number"
+					name="priceFrom"
+					value={values.priceFrom ?? 0}
+					required
+				/>
+			</FormField>
+			<FormField label="Display product count" help="Cosmetic — shown on category cards.">
 				<input
 					class="adm-input"
 					type="number"
 					name="displayCount"
 					value={values.displayCount ?? 0}
 				/>
-				<p class="adm-help">Shown on category cards (cosmetic).</p>
-			</div>
-		</div>
-
-		<ImageField name="imageUrl" bind:value={imageUrl} prefix="categories" required label="Image *" />
-		{#if errors.imageUrl}<p class="adm-help" style="color:var(--danger)">{errors.imageUrl}</p>{/if}
-
-		<div style="display:flex; gap:10px; margin-top:8px">
-			<button type="submit" class="adm-btn primary">{mode === 'new' ? 'Create' : 'Save changes'}</button>
-			<a href="/admin/categories" class="adm-btn ghost">Cancel</a>
-		</div>
-	</form>
-</div>
+			</FormField>
+		</FormSection>
+	{/snippet}
+</FormShell>

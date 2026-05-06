@@ -18,11 +18,10 @@
 	});
 </script>
 
-<header class="adm-header">
-	<div>
-		<h1>Edit post</h1>
-		<p>{data.row.titleVi}</p>
-	</div>
-</header>
-
-<PostForm mode="edit" values={form?.values ?? initial} errors={form?.errors ?? {}} />
+<PostForm
+	mode="edit"
+	title="Edit post"
+	subtitle={data.row.titleVi}
+	values={form?.values ?? initial}
+	errors={form?.errors ?? {}}
+/>

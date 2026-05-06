@@ -2,10 +2,13 @@
 	import ImageField from '$lib/components/admin/ImageField.svelte';
 	import TagInput from '$lib/components/admin/TagInput.svelte';
 	import RichTextEditor from '$lib/components/admin/RichTextEditor.svelte';
+	import { FormShell, FormSection, FormField, FormRow } from '$lib/components/admin/form';
 
 	type Cat = { id: string; nameVi: string };
 	type Props = {
 		mode: 'new' | 'edit';
+		title: string;
+		subtitle?: string;
 		categories: Cat[];
 		values?: {
 			id?: string;
@@ -22,7 +25,7 @@
 		};
 		errors?: Record<string, string>;
 	};
-	let { mode, categories, values = {}, errors = {} }: Props = $props();
+	let { mode, title, subtitle, categories, values = {}, errors = {} }: Props = $props();
 
 	let imageUrl = $state(values.imageUrl ?? '');
 	let specs = $state<string[]>(values.specs ?? []);
@@ -30,11 +33,53 @@
 	let descEn = $state(values.descEn ?? '');
 </script>
 
-<div class="adm-card">
-	<form method="post" class="adm-form">
-		<div class="row">
-			<div class="adm-field">
-				<label>ID (slug)</label>
+<FormShell {title} {subtitle} {mode} backHref="/admin/products" backLabel="Products">
+	<FormSection title="Names" description="Display names shown across the catalog.">
+		<FormRow>
+			<FormField label="Vietnamese" required error={errors.nameVi}>
+				<input class="adm-input" name="nameVi" value={values.nameVi ?? ''} required />
+			</FormField>
+			<FormField label="English" required error={errors.nameEn}>
+				<input class="adm-input" name="nameEn" value={values.nameEn ?? ''} required />
+			</FormField>
+		</FormRow>
+	</FormSection>
+
+	<FormSection title="Description">
+		<FormField label="Vietnamese" required error={errors.descVi}>
+			<RichTextEditor
+				name="descVi"
+				bind:value={descVi}
+				placeholder="Mô tả sản phẩm…"
+				required
+			/>
+		</FormField>
+		<FormField label="English">
+			<RichTextEditor
+				name="descEn"
+				bind:value={descEn}
+				placeholder="English description (optional)…"
+			/>
+		</FormField>
+	</FormSection>
+
+	<FormSection title="Image">
+		<ImageField name="imageUrl" bind:value={imageUrl} prefix="products" required />
+		{#if errors.imageUrl}<p class="adm-field-error">{errors.imageUrl}</p>{/if}
+	</FormSection>
+
+	<FormSection title="Specs" description="Chips shown on the product detail page.">
+		<TagInput name="specs" bind:values={specs} label="" />
+	</FormSection>
+
+	{#snippet sidebar()}
+		<FormSection title="Identity" dense>
+			<FormField
+				label="ID (slug)"
+				help={mode === 'edit'
+					? 'Stable ID used in URLs. Cannot be changed.'
+					: 'Auto-derived from the SKU if blank.'}
+			>
 				<input
 					class="adm-input"
 					name="id"
@@ -42,70 +87,33 @@
 					readonly={mode === 'edit'}
 					placeholder="auto from code"
 				/>
-				<p class="adm-help">Stable ID used in URLs.</p>
-			</div>
-			<div class="adm-field">
-				<label>Code (SKU) *</label>
+			</FormField>
+			<FormField label="Code (SKU)" required error={errors.code}>
 				<input class="adm-input" name="code" value={values.code ?? ''} required />
-				{#if errors.code}<p class="adm-help" style="color:var(--danger)">{errors.code}</p>{/if}
-			</div>
-		</div>
+			</FormField>
+		</FormSection>
 
-		<div class="row">
-			<div class="adm-field">
-				<label>Name (Vietnamese) *</label>
-				<input class="adm-input" name="nameVi" value={values.nameVi ?? ''} required />
-				{#if errors.nameVi}<p class="adm-help" style="color:var(--danger)">{errors.nameVi}</p>{/if}
-			</div>
-			<div class="adm-field">
-				<label>Name (English) *</label>
-				<input class="adm-input" name="nameEn" value={values.nameEn ?? ''} required />
-				{#if errors.nameEn}<p class="adm-help" style="color:var(--danger)">{errors.nameEn}</p>{/if}
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="adm-field">
-				<label>Category *</label>
+		<FormSection title="Catalog" dense>
+			<FormField label="Category" required error={errors.categoryId}>
 				<select class="adm-select" name="categoryId" required>
 					<option value="" disabled selected={!values.categoryId}>— choose —</option>
 					{#each categories as c (c.id)}
 						<option value={c.id} selected={values.categoryId === c.id}>{c.nameVi}</option>
 					{/each}
 				</select>
-				{#if errors.categoryId}<p class="adm-help" style="color:var(--danger)">{errors.categoryId}</p>{/if}
-			</div>
-			<div class="adm-field">
-				<label>Price (VND) *</label>
-				<input class="adm-input" type="number" name="price" value={values.price ?? 0} required />
-				{#if errors.price}<p class="adm-help" style="color:var(--danger)">{errors.price}</p>{/if}
-			</div>
-		</div>
-
-		<div class="adm-field">
-			<label>Tag (optional)</label>
-			<input class="adm-input" name="tag" value={values.tag ?? ''} placeholder="e.g. Bestseller" />
-		</div>
-
-		<div class="adm-field">
-			<label>Description (Vietnamese) *</label>
-			<RichTextEditor name="descVi" bind:value={descVi} placeholder="Mô tả sản phẩm…" required />
-			{#if errors.descVi}<p class="adm-help" style="color:var(--danger)">{errors.descVi}</p>{/if}
-		</div>
-
-		<div class="adm-field">
-			<label>Description (English)</label>
-			<RichTextEditor name="descEn" bind:value={descEn} placeholder="English description (optional)…" />
-		</div>
-
-		<ImageField name="imageUrl" bind:value={imageUrl} prefix="products" required label="Image *" />
-		{#if errors.imageUrl}<p class="adm-help" style="color:var(--danger)">{errors.imageUrl}</p>{/if}
-
-		<TagInput name="specs" bind:values={specs} label="Specs (chips — Enter to add)" />
-
-		<div style="display:flex; gap:10px; margin-top:8px">
-			<button type="submit" class="adm-btn primary">{mode === 'new' ? 'Create' : 'Save changes'}</button>
-			<a href="/admin/products" class="adm-btn ghost">Cancel</a>
-		</div>
-	</form>
-</div>
+			</FormField>
+			<FormField label="Price (VND)" required error={errors.price}>
+				<input
+					class="adm-input"
+					type="number"
+					name="price"
+					value={values.price ?? 0}
+					required
+				/>
+			</FormField>
+			<FormField label="Tag" help="Optional marketing label, e.g. Bestseller.">
+				<input class="adm-input" name="tag" value={values.tag ?? ''} placeholder="e.g. Bestseller" />
+			</FormField>
+		</FormSection>
+	{/snippet}
+</FormShell>

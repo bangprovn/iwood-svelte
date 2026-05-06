@@ -5,15 +5,10 @@
 	const today = new Date().toISOString().slice(0, 10);
 </script>
 
-<header class="adm-header">
-	<div>
-		<h1>New post</h1>
-		<p>Editorial content shown on /news.</p>
-	</div>
-</header>
-
 <PostForm
 	mode="new"
+	title="New post"
+	subtitle="Editorial content shown on /news."
 	values={form?.values ?? { publishedAt: today }}
 	errors={form?.errors ?? {}}
 />

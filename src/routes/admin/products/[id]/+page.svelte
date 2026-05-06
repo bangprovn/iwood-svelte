@@ -18,15 +18,10 @@
 	});
 </script>
 
-<header class="adm-header">
-	<div>
-		<h1>Edit product</h1>
-		<p>{data.row.nameVi} · <code>{data.row.code}</code></p>
-	</div>
-</header>
-
 <ProductForm
 	mode="edit"
+	title="Edit product"
+	subtitle={`${data.row.nameVi} · ${data.row.code}`}
 	categories={data.categories}
 	values={form?.values ?? initial}
 	errors={form?.errors ?? {}}

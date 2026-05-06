@@ -1,9 +1,23 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { FormDialog, FormField, FormRow } from '$lib/components/admin/form';
 	import type { ActionData, PageData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
-	let editing = $state<string | null>(null);
+
+	type Row = (typeof data.rows)[number];
+
+	let creating = $state(false);
+	let editing = $state<Row | null>(null);
+
+	const createErrors = $derived(
+		form?.scope === 'create' ? form?.errors ?? {} : {}
+	);
+	const updateErrors = $derived(
+		form?.scope === 'update' && editing && form?.editId === editing.id
+			? form?.errors ?? {}
+			: {}
+	);
 </script>
 
 <header class="adm-header">
@@ -11,42 +25,12 @@
 		<h1>Project categories</h1>
 		<p>Filters used on /projects.</p>
 	</div>
+	<button class="adm-btn primary" type="button" onclick={() => (creating = true)}>
+		+ New category
+	</button>
 </header>
 
 {#if form?.message}<p class="adm-error">{form.message}</p>{/if}
-
-<div class="adm-card" style="margin-bottom: 18px">
-	<h2 style="font-size:14px; margin:0 0 10px">Add new</h2>
-	<form method="post" action="?/create" class="adm-form" use:enhance>
-		<div class="row">
-			<div class="adm-field">
-				<label>ID (slug, optional)</label>
-				<input class="adm-input" name="id" placeholder="auto" />
-			</div>
-			<div class="adm-field">
-				<label>Sort order</label>
-				<input class="adm-input" type="number" name="sortOrder" value="0" />
-			</div>
-		</div>
-		<div class="row">
-			<div class="adm-field">
-				<label>Name (Vietnamese) *</label>
-				<input class="adm-input" name="nameVi" required />
-				{#if form?.scope === 'create' && form?.errors?.nameVi}
-					<p class="adm-help" style="color:var(--danger)">{form.errors.nameVi}</p>
-				{/if}
-			</div>
-			<div class="adm-field">
-				<label>Name (English) *</label>
-				<input class="adm-input" name="nameEn" required />
-				{#if form?.scope === 'create' && form?.errors?.nameEn}
-					<p class="adm-help" style="color:var(--danger)">{form.errors.nameEn}</p>
-				{/if}
-			</div>
-		</div>
-		<div><button class="adm-btn primary" type="submit">Add category</button></div>
-	</form>
-</div>
 
 <table class="adm-table">
 	<thead>
@@ -56,59 +40,96 @@
 	</thead>
 	<tbody>
 		{#each data.rows as r (r.id)}
-			{#if editing === r.id}
-				<tr>
-					<td colspan="5">
-						<form method="post" action="?/update" class="adm-form" use:enhance={() => async ({ result, update }) => {
-							await update();
-							if (result.type === 'success') editing = null;
-						}}>
-							<input type="hidden" name="id" value={r.id} />
-							<div class="row">
-								<div class="adm-field">
-									<label>Sort</label>
-									<input class="adm-input" type="number" name="sortOrder" value={r.sortOrder} />
-								</div>
-								<div class="adm-field">
-									<label>Vietnamese</label>
-									<input class="adm-input" name="nameVi" value={r.nameVi} required />
-								</div>
-								<div class="adm-field">
-									<label>English</label>
-									<input class="adm-input" name="nameEn" value={r.nameEn} required />
-								</div>
-							</div>
-							<div style="display:flex; gap:8px">
-								<button class="adm-btn primary" type="submit">Save</button>
-								<button type="button" class="adm-btn ghost" onclick={() => (editing = null)}>Cancel</button>
-							</div>
-						</form>
-					</td>
-				</tr>
-			{:else}
-				<tr>
-					<td>{r.sortOrder}</td>
-					<td><code style="font-size:12px">{r.id}</code></td>
-					<td>{r.nameVi}</td>
-					<td>{r.nameEn}</td>
-					<td class="row-actions">
-						<button class="adm-btn sm ghost" onclick={() => (editing = r.id)}>Edit</button>
-						<form
-							method="post"
-							action="?/delete"
-							use:enhance={() => async ({ update }) => {
-								if (confirm(`Delete "${r.nameVi}"?`)) await update();
-							}}
-							style="display:inline"
-						>
-							<input type="hidden" name="id" value={r.id} />
-							<button class="adm-btn sm danger" type="submit">Delete</button>
-						</form>
-					</td>
-				</tr>
-			{/if}
+			<tr>
+				<td>{r.sortOrder}</td>
+				<td><code style="font-size:12px">{r.id}</code></td>
+				<td>{r.nameVi}</td>
+				<td>{r.nameEn}</td>
+				<td class="row-actions">
+					<button class="adm-btn sm ghost" type="button" onclick={() => (editing = r)}>
+						Edit
+					</button>
+					<form
+						method="post"
+						action="?/delete"
+						use:enhance={() => async ({ update }) => {
+							if (confirm(`Delete "${r.nameVi}"?`)) await update();
+						}}
+						style="display:inline"
+					>
+						<input type="hidden" name="id" value={r.id} />
+						<button class="adm-btn sm danger" type="submit">Delete</button>
+					</form>
+				</td>
+			</tr>
 		{:else}
-			<tr><td colspan="5" style="text-align:center; color:var(--fg-3); padding:20px">None yet.</td></tr>
+			<tr>
+				<td colspan="5" style="text-align:center; color:var(--fg-3); padding:20px">
+					No project categories yet.
+				</td>
+			</tr>
 		{/each}
 	</tbody>
 </table>
+
+<!-- Create modal -->
+<FormDialog
+	open={creating}
+	title="New project category"
+	subtitle="Used as a filter on the public /projects page."
+	action="?/create"
+	submitLabel="Create"
+	onClose={() => (creating = false)}
+>
+	<FormRow>
+		<FormField label="Vietnamese" required error={createErrors.nameVi}>
+			<input class="adm-input" name="nameVi" required />
+		</FormField>
+		<FormField label="English" required error={createErrors.nameEn}>
+			<input class="adm-input" name="nameEn" required />
+		</FormField>
+	</FormRow>
+	<FormRow>
+		<FormField label="ID (slug)" help="Optional. Auto-derived from English name if blank.">
+			<input class="adm-input" name="id" placeholder="auto" />
+		</FormField>
+		<FormField label="Sort order" help="Lower appears first.">
+			<input class="adm-input" type="number" name="sortOrder" value="0" />
+		</FormField>
+	</FormRow>
+</FormDialog>
+
+<!-- Edit modal -->
+<FormDialog
+	open={editing !== null}
+	title="Edit project category"
+	subtitle={editing?.nameVi}
+	action="?/update"
+	submitLabel="Save changes"
+	onClose={() => (editing = null)}
+	onSubmit={() =>
+		async ({ update, result }) => {
+			await update();
+			if (result.type === 'success') editing = null;
+		}}
+>
+	{#if editing}
+		<input type="hidden" name="id" value={editing.id} />
+		<FormRow>
+			<FormField label="Vietnamese" required error={updateErrors.nameVi}>
+				<input class="adm-input" name="nameVi" value={editing.nameVi} required />
+			</FormField>
+			<FormField label="English" required error={updateErrors.nameEn}>
+				<input class="adm-input" name="nameEn" value={editing.nameEn} required />
+			</FormField>
+		</FormRow>
+		<FormField label="Sort order">
+			<input
+				class="adm-input"
+				type="number"
+				name="sortOrder"
+				value={editing.sortOrder}
+			/>
+		</FormField>
+	{/if}
+</FormDialog>

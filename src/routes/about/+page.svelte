@@ -2,8 +2,10 @@
 	import Icon from '$lib/components/Icon.svelte';
 	import { useI18n, t } from '$lib/i18n';
 	import { IMG } from '$lib/data/iwood';
+	import type { Writable } from 'svelte/store';
+	import type { I18nData } from '$lib/i18n';
 
-	const i18n = useI18n();
+	const i18n = useI18n() as Writable<I18nData>;
 
 	const timeline = $derived([
 		{ year: '2019', key: 'about.timeline.2019' },
