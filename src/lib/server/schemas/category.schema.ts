@@ -1,16 +1,13 @@
 import { z } from 'zod';
+import { optionalId, requiredText } from './_helpers';
 
 export const categoryWriteSchema = z.object({
-	id: z
-		.string()
-		.trim()
-		.optional()
-		.transform((v) => (v ? v : undefined)),
-	nameVi: z.string().trim().min(1, 'Required'),
-	nameEn: z.string().trim().min(1, 'Required'),
-	blurb: z.string().trim().min(1, 'Required'),
+	id: optionalId,
+	nameVi: requiredText,
+	nameEn: requiredText,
+	blurb: requiredText,
 	priceFrom: z.coerce.number().min(0, 'Must be ≥ 0'),
-	imageUrl: z.string().trim().min(1, 'Required'),
+	imageUrl: requiredText,
 	displayCount: z.coerce.number().min(0).default(0),
 	sortOrder: z.coerce.number().default(0)
 });

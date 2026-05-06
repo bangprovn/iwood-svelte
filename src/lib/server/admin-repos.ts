@@ -109,19 +109,8 @@ export async function deleteCategory(id: string) {
 // PRODUCTS (+ specs)
 // ===========================================================================
 
-export type ProductWriteInput = {
-	id?: string;
-	code: string;
-	nameVi: string;
-	nameEn: string;
-	categoryId: string;
-	price: number;
-	imageUrl: string;
-	tag?: string | null;
-	descVi: string;
-	descEn?: string | null;
-	specs: string[]; // ordered list of labels
-};
+import type { ProductWriteInput } from '$lib/server/schemas';
+export type { ProductWriteInput };
 
 export type ProductRow = typeof product.$inferSelect & { specs: string[] };
 
@@ -271,19 +260,8 @@ export async function deleteProjectCategory(id: string) {
 // PROJECTS (+ product links)
 // ===========================================================================
 
-export type ProjectWriteInput = {
-	id?: string;
-	nameVi: string;
-	nameEn: string;
-	categoryId: string;
-	year: number;
-	area: string;
-	location: string;
-	imageUrl: string;
-	summaryVi: string;
-	summaryEn?: string | null;
-	productIds: string[];
-};
+import type { ProjectWriteInput } from '$lib/server/schemas';
+export type { ProjectWriteInput };
 
 export type ProjectRow = typeof project.$inferSelect & { productIds: string[] };
 
@@ -357,19 +335,8 @@ export async function deleteProject(id: string) {
 // POSTS
 // ===========================================================================
 
-export type PostWriteInput = {
-	id?: string;
-	slug?: string;
-	titleVi: string;
-	titleEn: string;
-	category: string;
-	publishedAt: string; // YYYY-MM-DD
-	imageUrl: string;
-	excerptVi: string;
-	excerptEn?: string | null;
-	contentVi?: string | null;
-	contentEn?: string | null;
-};
+import type { PostWriteInput } from '$lib/server/schemas';
+export type { PostWriteInput };
 
 export async function listPostsAdmin() {
 	return db.select().from(post).orderBy(desc(post.publishedAt));
@@ -427,16 +394,8 @@ export async function deletePost(id: string) {
 // SHOWROOMS
 // ===========================================================================
 
-export type ShowroomWriteInput = {
-	id?: string;
-	city: string;
-	address: string;
-	phone: string;
-	hours: string;
-	imageUrl: string;
-	mapUrl?: string | null;
-	sortOrder?: number;
-};
+import type { ShowroomWriteInput } from '$lib/server/schemas';
+export type { ShowroomWriteInput };
 
 export async function listShowroomsAdmin() {
 	return db.select().from(showroom).orderBy(asc(showroom.sortOrder));

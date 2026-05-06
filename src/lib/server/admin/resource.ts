@@ -16,7 +16,12 @@ import { parseForm, type FormFailState } from './parse-form';
  *
  * Forms stay bespoke per-resource — only the server scaffolding is unified.
  */
-export type ResourceConfig<TList, TRow, TInput, TRelated extends object = object> = {
+export type ResourceConfig<
+	TListData extends object,
+	TRow,
+	TInput,
+	TRelated extends object = object
+> = {
 	/** Display name for log messages / errors. */
 	name: string;
 	/** Zod schema validating create/update form input. */
@@ -25,15 +30,34 @@ export type ResourceConfig<TList, TRow, TInput, TRelated extends object = object
 	basePath: string;
 	/** Route param name for the edit page (default: "id"). */
 	paramName?: string;
-	/** List page data loader. */
-	listAll: (event: RequestEvent) => Promise<TList>;
+	/** Form field name carrying the row id on the list-page delete form. Default: "id". */
+	deleteIdField?: string;
+	/**
+	 * List page data loader. Returns the full page-data shape, e.g.
+	 * `{ rows, categories, search, categoryId }` — defineResource does NOT
+	 * wrap. Caller controls everything past the auth check.
+	 */
+	listAll: (event: RequestEvent) => Promise<TListData>;
 	/** Edit page row loader; return null/undefined for 404. */
 	getOne: (id: string, event: RequestEvent) => Promise<TRow | null | undefined>;
-	/** Optional extra data for new/edit pages (e.g. dropdown options). */
+	/**
+	 * Optional extra data for new/edit pages — merged into the page-data
+	 * result alongside `row` (on edit). Typical use: dropdown options shared
+	 * by both create and update forms.
+	 */
 	loadRelated?: (event: RequestEvent) => Promise<TRelated>;
 	create: (input: TInput, event: RequestEvent) => Promise<unknown>;
 	update: (id: string, input: TInput, event: RequestEvent) => Promise<unknown>;
 	deleteOne: (id: string, event: RequestEvent) => Promise<unknown>;
+	/**
+	 * Optional hook invoked when create/update throws. Lets a resource turn
+	 * domain errors (e.g. unique-violation in locales) into a `fail(409, …)`
+	 * with field-level error attribution. If unset, errors propagate as 500.
+	 */
+	onWriteError?: (
+		err: unknown,
+		input: TInput
+	) => ActionFailure<FormFailState<TInput>>;
 };
 
 type DeleteActionResult = { success: true } | ActionFailure<{ message: string }>;
@@ -42,11 +66,11 @@ type WriteActionResult<TInput> =
 	| ActionFailure<{ message: string }>;
 
 export function defineResource<
-	TList,
+	TListData extends object,
 	TRow,
 	TInput,
 	TRelated extends object = Record<string, never>
->(config: ResourceConfig<TList, TRow, TInput, TRelated>) {
+>(config: ResourceConfig<TListData, TRow, TInput, TRelated>) {
 	const paramName = config.paramName ?? 'id';
 	const getParam = (event: RequestEvent): string => {
 		const params = event.params as Record<string, string | undefined>;
@@ -57,15 +81,16 @@ export function defineResource<
 
 	const listLoad = async (event: RequestEvent) => {
 		requireAdmin(event);
-		const rows = await config.listAll(event);
-		return { rows };
+		return config.listAll(event);
 	};
+
+	const deleteIdField = config.deleteIdField ?? 'id';
 
 	const deleteAction = async (event: RequestEvent): Promise<DeleteActionResult> => {
 		requireAdmin(event);
 		const fd = await event.request.formData();
-		const id = fd.get('id')?.toString();
-		if (!id) return fail(400, { message: 'id required' });
+		const id = fd.get(deleteIdField)?.toString();
+		if (!id) return fail(400, { message: `${deleteIdField} required` });
 		try {
 			await config.deleteOne(id, event);
 		} catch (e) {
@@ -86,7 +111,15 @@ export function defineResource<
 		const fd = await event.request.formData();
 		const parsed = parseForm(config.schema, fd);
 		if (!('input' in parsed)) return parsed;
-		await config.create(parsed.input, event);
+		if (config.onWriteError) {
+			try {
+				await config.create(parsed.input, event);
+			} catch (err) {
+				return config.onWriteError(err, parsed.input);
+			}
+		} else {
+			await config.create(parsed.input, event);
+		}
 		throw redirect(303, config.basePath);
 	};
 
@@ -109,7 +142,15 @@ export function defineResource<
 		const fd = await event.request.formData();
 		const parsed = parseForm(config.schema, fd);
 		if (!('input' in parsed)) return parsed;
-		await config.update(id, parsed.input, event);
+		if (config.onWriteError) {
+			try {
+				await config.update(id, parsed.input, event);
+			} catch (err) {
+				return config.onWriteError(err, parsed.input);
+			}
+		} else {
+			await config.update(id, parsed.input, event);
+		}
 		throw redirect(303, config.basePath);
 	};
 

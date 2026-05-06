@@ -14,7 +14,7 @@ export const categoriesResource = defineResource({
 	name: 'Category',
 	schema: categoryWriteSchema,
 	basePath: '/admin/categories',
-	listAll: () => listCategoriesAdmin(),
+	listAll: async () => ({ rows: await listCategoriesAdmin() }),
 	getOne: async (id) => {
 		const [row] = await db.select().from(category).where(eq(category.id, id));
 		return row ?? null;

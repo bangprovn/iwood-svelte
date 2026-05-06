@@ -9,14 +9,8 @@ import { invalidateI18n } from './translations';
 const LOCALE_CODE_RE = /^[a-z]{2,3}(-[A-Za-z0-9]+)*$/;
 const KEY_RE = /^[A-Za-z0-9_][A-Za-z0-9_.-]*$/;
 
-export type LocaleWriteInput = {
-	code: string;
-	label: string;
-	dir: 'ltr' | 'rtl';
-	isActive: boolean;
-	isDefault: boolean;
-	sortOrder: number;
-};
+import type { LocaleWriteInput } from '$lib/server/schemas';
+export type { LocaleWriteInput };
 
 export type TranslationKeyInput = {
 	key: string;
