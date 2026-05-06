@@ -1,9 +1,12 @@
 /* iWood Design System — colors_and_type.css
  * Tokens for color, type, spacing, radii, shadows.
  * Brand: iWood (Giải pháp trần tường vách) — red + black, professional industrial.
+ *
+ * Google Fonts (Be Vietnam Pro + Barlow Condensed) are loaded via <link>
+ * in src/app.html — keeping them out of CSS avoids the bundled-@import
+ * ordering trap (CSS spec requires @import before all other statements,
+ * which Tailwind's bundler can't guarantee for nested CSS imports).
  */
-
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&family=Barlow+Condensed:wght@600;700;800;900&display=swap');
 
 :root {
 	/* ---------- BRAND COLORS ---------- */

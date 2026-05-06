@@ -383,7 +383,7 @@ function resolveNode(node: MenuItemNode, locale: 'vi' | 'en', refs: RefMaps): Re
 }
 
 function resolveLink(node: MenuItemNode, locale: 'vi' | 'en', refs: RefMaps): ResolvedLink {
-	let href = '';
+	let href: string;
 	let labelFallback = '';
 	switch (node.kind) {
 		case 'category':

@@ -1,18 +1,7 @@
 import { and, asc, count, desc, eq, inArray } from 'drizzle-orm';
 import { db } from '../db';
-import {
-	page,
-	pageBlock,
-	pageBlockContent,
-	pageRevision,
-	pageBlockRelations,
-	pageBlockContentRelations,
-	pageRelations,
-	type page as PageT,
-	type pageBlock as PageBlockT,
-	type pageBlockContent as PageBlockContentT
-} from '../db/schema';
-import { getAllBlockDefinitions, getBlockDefinition } from '$lib/page-blocks/registry';
+import { page, pageBlock, pageBlockContent, pageRevision } from '../db/schema';
+import { getAllBlockDefinitions } from '$lib/page-blocks/registry';
 import { listCategories, listProducts } from './public-repos';
 
 export type PageDTO = typeof page.$inferSelect;
