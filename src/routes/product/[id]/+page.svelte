@@ -214,6 +214,7 @@
 		<section class="section section-bone" style="padding: 64px 0;">
 			<div class="container">
 				<div
+					class="product-tabs-row"
 					style="display: flex; gap: 0; border-bottom: 1px solid var(--hairline); margin-bottom: 32px;"
 				>
 					{#each tabs as tabItem (tabItem.k)}

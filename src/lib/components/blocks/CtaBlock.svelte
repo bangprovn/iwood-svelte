@@ -12,7 +12,12 @@
 
 	const c = content as unknown as CtaContent;
 	const bgImage = settings.backgroundImage ? `url(${settings.backgroundImage})` : undefined;
-	const paddingMap = { none: '2rem 2rem', sm: '3rem 2rem', md: '5rem 2rem', lg: '7rem 2rem' } as const;
+	const paddingMap = {
+		none: 'clamp(1.5rem, 5vw, 2rem) clamp(1rem, 5vw, 2rem)',
+		sm: 'clamp(2rem, 6vw, 3rem) clamp(1rem, 5vw, 2rem)',
+		md: 'clamp(2.5rem, 8vw, 5rem) clamp(1rem, 5vw, 2rem)',
+		lg: 'clamp(3rem, 10vw, 7rem) clamp(1rem, 5vw, 2rem)'
+	} as const;
 	const padding = paddingMap[settings.paddingSize ?? 'lg'];
 	const bg = settings.backgroundColor || 'var(--iwood-red)';
 </script>
@@ -64,7 +69,7 @@
 
 	.cta-heading {
 		font-family: var(--font-display);
-		font-size: var(--fs-3xl);
+		font-size: clamp(1.75rem, 5vw, var(--fs-3xl));
 		font-weight: 800;
 		line-height: var(--lh-snug);
 		margin: 0;

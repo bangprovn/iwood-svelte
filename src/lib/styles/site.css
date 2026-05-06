@@ -2184,6 +2184,192 @@ img {
 	}
 }
 
+/* ---------- CTA / hero button rows wrap on small viewports ---------- *
+ * Many pages use inline `display: flex; gap: 12px` for primary+secondary
+ * button rows. Without flex-wrap they push past the viewport on phones.
+ * Inline styles cannot be overridden cleanly, so we target the container
+ * via attribute selector and force wrap + sane sizing.
+ */
+@media (max-width: 480px) {
+	.cinematic [style*='display: flex'],
+	.section [style*='display: flex'][style*='gap: 12px'],
+	.hero-actions {
+		flex-wrap: wrap;
+	}
+	.cinematic [style*='display: flex'] > .btn,
+	.section [style*='display: flex'][style*='gap: 12px'] > .btn {
+		flex: 1 1 auto;
+		min-width: 0;
+		justify-content: center;
+	}
+}
+
+/* ---------- PAGE HERO padding scale ---------- */
+@media (max-width: 720px) {
+	.page-hero {
+		padding: 56px 0 40px;
+	}
+	.page-hero .lead {
+		font-size: 16px;
+	}
+}
+
+/* ---------- FILTER BAR — sort selects collapse ---------- */
+@media (max-width: 560px) {
+	.filter-bar {
+		gap: 6px;
+	}
+	.filter-chip {
+		padding: 7px 12px;
+		font-size: 12px;
+	}
+}
+
+/* ---------- PRODUCT DETAIL — tabs scroll on narrow ---------- *
+ * The tab strip (`display: flex; gap: 0; border-bottom`) packs four 16x24
+ * buttons that can wrap awkwardly. Allow horizontal scroll instead.
+ */
+.product-tabs-row,
+.section [style*='border-bottom: 1px solid var(--hairline)'][style*='display: flex'][style*='gap: 0'] {
+	overflow-x: auto;
+	flex-wrap: nowrap !important;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width: none;
+}
+.product-tabs-row::-webkit-scrollbar,
+.section [style*='border-bottom: 1px solid var(--hairline)'][style*='display: flex'][style*='gap: 0']::-webkit-scrollbar {
+	display: none;
+}
+.product-tabs-row > button,
+.section [style*='border-bottom: 1px solid var(--hairline)'][style*='display: flex'][style*='gap: 0'] > button {
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+@media (max-width: 480px) {
+	.product-tabs-row > button,
+	.section [style*='border-bottom: 1px solid var(--hairline)'][style*='display: flex'][style*='gap: 0'] > button {
+		padding: 14px 16px !important;
+		font-size: 12px !important;
+	}
+}
+
+/* ---------- "NOT FOUND" main padding ---------- *
+ * Both product and project [id] pages render a fallback `main.container`
+ * with inline `padding: 80px;` which leaves no horizontal room on phones.
+ */
+@media (max-width: 600px) {
+	main.container[style*='padding: 80px'] {
+		padding: 56px 16px !important;
+	}
+}
+
+/* ---------- NEWS detail hero ---------- *
+ * Header block on /news/[slug] uses inline `min-height: 480px` and
+ * `padding: 96px 0 64px` — too generous on phones.
+ */
+@media (max-width: 720px) {
+	main > section[style*='min-height: 480px'][style*='padding: 96px 0 64px'] {
+		min-height: 360px !important;
+		padding: 64px 0 40px !important;
+	}
+}
+
+/* ---------- QUOTE PAGE button rows ---------- */
+@media (max-width: 480px) {
+	.quote-types button {
+		padding: 12px !important;
+		font-size: 14px;
+	}
+}
+
+/* ---------- HOME hero buttons + cinematic buttons ---------- */
+@media (max-width: 480px) {
+	.hero-actions .btn,
+	main section[class~='cinematic'] [style*='display: flex'][style*='gap: 12px'] .btn {
+		flex: 1 1 auto;
+		justify-content: center;
+	}
+}
+
+/* ---------- MEGA MENU featured grid on tiny screens ---------- */
+@media (max-width: 480px) {
+	.mega-col [style*='grid-template-columns: 1fr 1fr'] {
+		grid-template-columns: 1fr !important;
+	}
+}
+
+/* ---------- INQUIRY DRAWER item — tighten on tiny screens ---------- */
+@media (max-width: 380px) {
+	.drawer-item .thumb {
+		width: 60px;
+		height: 60px;
+	}
+	.drawer-item .info h5 {
+		font-size: 13px;
+	}
+}
+
+/* ---------- FOOTER bar — smaller gaps when wrapping ---------- */
+@media (max-width: 600px) {
+	.footer-bar {
+		font-size: 11px;
+	}
+	.footer-bar .legal {
+		gap: 16px;
+		flex-wrap: wrap;
+	}
+}
+
+/* ---------- HEADER row tighten on very small phones ---------- */
+@media (max-width: 380px) {
+	.header-row {
+		padding: 10px 12px;
+		gap: 8px;
+	}
+	.header-cta {
+		gap: 4px;
+	}
+	.icon-btn {
+		width: 36px;
+		height: 36px;
+	}
+	.phone-pill {
+		padding: 8px 10px;
+	}
+}
+
+/* ---------- HOME factory cinematic stat numbers ---------- *
+ * Stat blocks inside the cinematic section use inline `font-size: 48px`
+ * which is unreadable wide on phones. Scale them down.
+ */
+@media (max-width: 560px) {
+	.cinematic .stat-row-3 [style*='font-size: 48px'] {
+		font-size: 36px !important;
+	}
+}
+
+/* ---------- PRODUCT DETAIL specs table first column ---------- */
+@media (max-width: 560px) {
+	main table[style*='border-collapse: collapse'] td:first-child {
+		width: 40% !important;
+		max-width: 140px;
+		font-size: 13px !important;
+	}
+}
+
+/* ---------- FAB stack — pull off the screen edge less ---------- */
+@media (max-width: 480px) {
+	.fab-stack {
+		bottom: 16px;
+		right: 16px;
+		gap: 10px;
+	}
+	.fab {
+		width: 48px;
+		height: 48px;
+	}
+}
+
 /* ---------- RICH-TEXT BODY ----------
  * Applied to {@html} content authored via the admin WYSIWYG. Keeps editorial
  * text consistent with the rest of the site (Barlow body, generous line

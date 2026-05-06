@@ -68,6 +68,15 @@
 		width: 100%;
 	}
 
+	@media (max-width: 480px) {
+		.content {
+			padding: 2rem 1rem;
+		}
+		.subheading {
+			font-size: var(--fs-md);
+		}
+	}
+
 	.eyebrow {
 		font-family: var(--font-body);
 		font-size: var(--fs-xs);
@@ -80,7 +89,7 @@
 
 	.heading {
 		font-family: var(--font-display);
-		font-size: var(--fs-5xl);
+		font-size: clamp(2.25rem, 7vw, var(--fs-5xl));
 		font-weight: 800;
 		color: var(--paper);
 		line-height: var(--lh-tight);

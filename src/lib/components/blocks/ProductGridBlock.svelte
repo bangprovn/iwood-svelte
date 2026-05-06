@@ -24,7 +24,7 @@
 	{#if products.length > 0}
 		<div
 			class="product-grid"
-			style:grid-template-columns={`repeat(${settings.columns || 4}, 1fr)`}
+			style:--cols={settings.columns || 4}
 			style:gap={`${settings.gapSize || 24}px`}
 		>
 			{#each products as p (p.id)}
@@ -52,6 +52,23 @@
 
 	.product-grid {
 		display: grid;
+		grid-template-columns: repeat(var(--cols, 4), 1fr);
+	}
+
+	@media (max-width: 1100px) {
+		.product-grid {
+			grid-template-columns: repeat(min(var(--cols, 4), 3), 1fr);
+		}
+	}
+	@media (max-width: 720px) {
+		.product-grid {
+			grid-template-columns: repeat(min(var(--cols, 4), 2), 1fr);
+		}
+	}
+	@media (max-width: 420px) {
+		.product-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.empty {

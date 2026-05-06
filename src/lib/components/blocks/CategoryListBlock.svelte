@@ -108,6 +108,16 @@
 		flex-shrink: 0;
 	}
 
+	@media (max-width: 480px) {
+		.list-layout .cat-image {
+			width: 120px;
+			height: 100px;
+		}
+		.list-layout .cat-info {
+			padding: 0.75rem;
+		}
+	}
+
 	.grid-layout .cat-image {
 		width: 100%;
 		height: 160px;

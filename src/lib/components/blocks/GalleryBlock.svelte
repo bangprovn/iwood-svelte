@@ -23,7 +23,7 @@
 
 <div
 	class="gallery-block"
-	style:grid-template-columns={`repeat(${settings.columns || 3}, 1fr)`}
+	style:--cols={settings.columns || 3}
 	style:gap={`${settings.gap || 16}px`}
 	style:border-radius={settings.borderRadius ? 'var(--radius-md)' : '0'}
 >
@@ -42,7 +42,24 @@
 <style>
 	.gallery-block {
 		display: grid;
+		grid-template-columns: repeat(var(--cols, 3), 1fr);
 		overflow: hidden;
+	}
+
+	@media (max-width: 900px) {
+		.gallery-block {
+			grid-template-columns: repeat(min(var(--cols, 3), 3), 1fr);
+		}
+	}
+	@media (max-width: 640px) {
+		.gallery-block {
+			grid-template-columns: repeat(min(var(--cols, 3), 2), 1fr);
+		}
+	}
+	@media (max-width: 420px) {
+		.gallery-block {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.gallery-item {
