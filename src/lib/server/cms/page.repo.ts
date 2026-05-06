@@ -29,7 +29,12 @@ export async function listPages() {
 	const counts = await db
 		.select({ pageId: pageBlock.pageId, n: count() })
 		.from(pageBlock)
-		.where(inArray(pageBlock.pageId, pages.map((p) => p.id)))
+		.where(
+			inArray(
+				pageBlock.pageId,
+				pages.map((p) => p.id)
+			)
+		)
 		.groupBy(pageBlock.pageId);
 	const countMap = new Map(counts.map((c) => [c.pageId, Number(c.n)]));
 	return pages.map((p) => ({ ...p, blockCount: countMap.get(p.id) ?? 0 }));
@@ -57,7 +62,12 @@ export async function getPageWithAllLocales(id: string) {
 	const contentRows = await db
 		.select()
 		.from(pageBlockContent)
-		.where(inArray(pageBlockContent.blockId, blocks.map((b) => b.id)));
+		.where(
+			inArray(
+				pageBlockContent.blockId,
+				blocks.map((b) => b.id)
+			)
+		);
 
 	const byBlock = new Map<string, Record<string, Record<string, unknown>>>();
 	for (const row of contentRows) {
@@ -91,7 +101,10 @@ export async function getPagePreviewById(id: string, locale: string) {
 // blocks (product_grid, category_list) re-resolve catalog data at request
 // time so published pages stay current with the catalog.
 export async function getPageBySlug(slug: string, locale: string) {
-	const [p] = await db.select().from(page).where(and(eq(page.slug, slug), eq(page.isActive, true)));
+	const [p] = await db
+		.select()
+		.from(page)
+		.where(and(eq(page.slug, slug), eq(page.isActive, true)));
 	if (!p) return null;
 	const blocks = await blocksFromSnapshot(p.publishedSnapshot, locale);
 	if (!blocks) return null;
@@ -191,7 +204,12 @@ const SLUG_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const ROUTE_RE = /^\/[A-Za-z0-9\-_/]*$/;
 
 export function validatePageInput(
-	input: Partial<PageWriteInput> & { titleVi?: string; slug?: string; type?: string; routePattern?: string | null }
+	input: Partial<PageWriteInput> & {
+		titleVi?: string;
+		slug?: string;
+		type?: string;
+		routePattern?: string | null;
+	}
 ): string | null {
 	if (input.titleVi !== undefined && !input.titleVi.trim()) return 'Vietnamese title is required';
 	if (input.slug !== undefined) {
@@ -203,7 +221,8 @@ export function validatePageInput(
 	if (input.type === 'override') {
 		const rp = (input.routePattern ?? '').trim();
 		if (!rp) return 'Override route is required for override pages';
-		if (!ROUTE_RE.test(rp)) return 'Route must start with / and contain only letters, numbers, hyphens, underscores, slashes';
+		if (!ROUTE_RE.test(rp))
+			return 'Route must start with / and contain only letters, numbers, hyphens, underscores, slashes';
 		if (rp.includes('..')) return 'Route may not contain ..';
 		if (rp.startsWith('/admin') || rp.startsWith('/api/') || rp.startsWith('/_app/'))
 			return 'Cannot override system routes (/admin, /api, /_app)';
@@ -211,7 +230,10 @@ export function validatePageInput(
 	return null;
 }
 
-export async function isRoutePatternTaken(routePattern: string, excludeId?: string): Promise<boolean> {
+export async function isRoutePatternTaken(
+	routePattern: string,
+	excludeId?: string
+): Promise<boolean> {
 	const rows = await db
 		.select({ id: page.id })
 		.from(page)
@@ -305,11 +327,7 @@ async function listBlocks(pageId: string, opts: { onlyActive?: boolean } = {}) {
 	const where = opts.onlyActive
 		? and(eq(pageBlock.pageId, pageId), eq(pageBlock.isActive, true))
 		: eq(pageBlock.pageId, pageId);
-	const blocks = await db
-		.select()
-		.from(pageBlock)
-		.where(where)
-		.orderBy(asc(pageBlock.sortOrder));
+	const blocks = await db.select().from(pageBlock).where(where).orderBy(asc(pageBlock.sortOrder));
 	return blocks;
 }
 
@@ -326,7 +344,10 @@ async function listBlocksWithContent(
 		.from(pageBlockContent)
 		.where(
 			and(
-				inArray(pageBlockContent.blockId, blocks.map((b) => b.id)),
+				inArray(
+					pageBlockContent.blockId,
+					blocks.map((b) => b.id)
+				),
 				eq(pageBlockContent.locale, locale)
 			)
 		);
@@ -353,10 +374,7 @@ async function buildSnapshot(pageId: string): Promise<string> {
 	const blocks = await listBlocks(pageId, { onlyActive: true });
 	const blockIds = blocks.map((b) => b.id);
 	const allContent = blockIds.length
-		? await db
-				.select()
-				.from(pageBlockContent)
-				.where(inArray(pageBlockContent.blockId, blockIds))
+		? await db.select().from(pageBlockContent).where(inArray(pageBlockContent.blockId, blockIds))
 		: [];
 
 	const blocksByLocale: Record<string, SnapshotBlock[]> = {};
@@ -385,7 +403,10 @@ async function buildSnapshot(pageId: string): Promise<string> {
 	return JSON.stringify({ blocksByLocale });
 }
 
-export async function publishPage(pageId: string, opts: { userId?: string | null; note?: string | null } = {}) {
+export async function publishPage(
+	pageId: string,
+	opts: { userId?: string | null; note?: string | null } = {}
+) {
 	const snapshot = await buildSnapshot(pageId);
 	const now = new Date();
 	await db
@@ -424,7 +445,11 @@ export async function getRevision(revisionId: number) {
 // Restore the live page_block / page_block_content tables from a past
 // revision's snapshot, then re-publish it. Note: this overwrites the working
 // copy. Caller may want to publish a new revision marker as well.
-export async function revertToRevision(pageId: string, revisionId: number, opts: { userId?: string | null } = {}) {
+export async function revertToRevision(
+	pageId: string,
+	revisionId: number,
+	opts: { userId?: string | null } = {}
+) {
 	const rev = await getRevision(revisionId);
 	if (!rev || rev.pageId !== pageId) throw new Error('Revision not found for this page');
 	let snap: SerializedSnapshot;
@@ -462,7 +487,10 @@ export async function revertToRevision(pageId: string, revisionId: number, opts:
 	}
 
 	// Re-publish: writes a fresh snapshot + new revision row marked as a revert
-	await publishPage(pageId, { userId: opts.userId ?? null, note: `Reverted to revision ${revisionId}` });
+	await publishPage(pageId, {
+		userId: opts.userId ?? null,
+		note: `Reverted to revision ${revisionId}`
+	});
 }
 
 // True if the live blocks/content differ from the last published snapshot.
@@ -535,10 +563,7 @@ export async function updateBlockContent(
 
 export async function reorderBlocks(blockIds: string[]) {
 	for (let i = 0; i < blockIds.length; i++) {
-		await db
-			.update(pageBlock)
-			.set({ sortOrder: i })
-			.where(eq(pageBlock.id, blockIds[i]));
+		await db.update(pageBlock).set({ sortOrder: i }).where(eq(pageBlock.id, blockIds[i]));
 	}
 }
 
@@ -579,10 +604,7 @@ export async function duplicateBlock(blockId: string) {
 export async function getBlock(id: string) {
 	const [block] = await db.select().from(pageBlock).where(eq(pageBlock.id, id));
 	if (!block) return null;
-	const contents = await db
-		.select()
-		.from(pageBlockContent)
-		.where(eq(pageBlockContent.blockId, id));
+	const contents = await db.select().from(pageBlockContent).where(eq(pageBlockContent.blockId, id));
 	const contentMap: Record<string, Record<string, unknown>> = {};
 	for (const c of contents) {
 		contentMap[c.locale] = JSON.parse(c.content);
@@ -604,7 +626,9 @@ export async function listBlockTypes() {
 			return {
 				...def,
 				settingsFields: def.settingsFields.map((f) =>
-					f.key === 'categoryId' ? { ...f, options: categories.map((c) => ({ value: c.id, label: c.vi })) } : f
+					f.key === 'categoryId'
+						? { ...f, options: categories.map((c) => ({ value: c.id, label: c.vi })) }
+						: f
 				)
 			};
 		}

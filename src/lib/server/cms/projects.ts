@@ -26,10 +26,7 @@ export const projectsResource = defineResource({
 	schema: projectWriteSchema,
 	basePath: '/admin/projects',
 	listAll: async () => {
-		const [rows, cats] = await Promise.all([
-			listProjectsAdmin(),
-			listProjectCategoriesAdmin()
-		]);
+		const [rows, cats] = await Promise.all([listProjectsAdmin(), listProjectCategoriesAdmin()]);
 		return { rows, cats };
 	},
 	loadRelated: loadProjectFormDeps,

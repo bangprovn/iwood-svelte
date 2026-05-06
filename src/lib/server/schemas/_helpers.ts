@@ -44,7 +44,5 @@ export const stringArray = z.preprocess(
 		if (v == null || v === '') return [];
 		return [v];
 	},
-	z
-		.array(z.string())
-		.transform((arr) => arr.map((s) => s.trim()).filter(Boolean))
+	z.array(z.string()).transform((arr) => arr.map((s) => s.trim()).filter(Boolean))
 );

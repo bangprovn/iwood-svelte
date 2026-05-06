@@ -5,8 +5,4 @@
  *   import { requireAdmin } from '$lib/server/auth';    // route guards
  */
 export { auth } from './config';
-export {
-	requireAdmin,
-	ensureAdminRole,
-	isAllowlistedEmail
-} from './guard';
+export { requireAdmin, ensureAdminRole, isAllowlistedEmail } from './guard';

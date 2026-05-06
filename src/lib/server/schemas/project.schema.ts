@@ -1,11 +1,5 @@
 import { z } from 'zod';
-import {
-	optionalHtml,
-	optionalId,
-	requiredHtml,
-	requiredText,
-	stringArray
-} from './_helpers';
+import { optionalHtml, optionalId, requiredHtml, requiredText, stringArray } from './_helpers';
 
 export const projectWriteSchema = z.object({
 	id: optionalId,

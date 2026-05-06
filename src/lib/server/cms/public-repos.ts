@@ -77,7 +77,12 @@ async function attachSpecs(rows: { id: string }[]): Promise<Map<string, string[]
 			sortOrder: productSpec.sortOrder
 		})
 		.from(productSpec)
-		.where(inArray(productSpec.productId, rows.map((r) => r.id)))
+		.where(
+			inArray(
+				productSpec.productId,
+				rows.map((r) => r.id)
+			)
+		)
 		.orderBy(asc(productSpec.productId), asc(productSpec.sortOrder));
 
 	const byProduct = new Map<string, string[]>();
@@ -206,9 +211,7 @@ export async function listProjectCategories(): Promise<ProjectCategoryDTO[]> {
 // Projects
 // ---------------------------------------------------------------------------
 
-async function attachProjectProducts(
-	rows: { id: string }[]
-): Promise<Map<string, string[]>> {
+async function attachProjectProducts(rows: { id: string }[]): Promise<Map<string, string[]>> {
 	if (rows.length === 0) return new Map();
 	const links = await db
 		.select({
@@ -217,7 +220,12 @@ async function attachProjectProducts(
 		})
 		.from(projectProduct)
 		.innerJoin(product, eq(product.id, projectProduct.productId))
-		.where(inArray(projectProduct.projectId, rows.map((r) => r.id)));
+		.where(
+			inArray(
+				projectProduct.projectId,
+				rows.map((r) => r.id)
+			)
+		);
 
 	const byProject = new Map<string, string[]>();
 	for (const l of links) {
@@ -245,10 +253,12 @@ function toProjectDTO(r: typeof project.$inferSelect, products: string[]): Proje
 	};
 }
 
-export async function listProjects(opts: {
-	categoryId?: string;
-	limit?: number;
-} = {}): Promise<ProjectDTO[]> {
+export async function listProjects(
+	opts: {
+		categoryId?: string;
+		limit?: number;
+	} = {}
+): Promise<ProjectDTO[]> {
 	const where =
 		opts.categoryId && opts.categoryId !== 'all'
 			? eq(project.categoryId, opts.categoryId)
@@ -302,10 +312,11 @@ function toPostDTO(r: typeof post.$inferSelect): PostDTO {
 	};
 }
 
-export async function listPosts(opts: { category?: string; limit?: number } = {}): Promise<
-	PostDTO[]
-> {
-	const where = opts.category && opts.category !== 'all' ? eq(post.category, opts.category) : undefined;
+export async function listPosts(
+	opts: { category?: string; limit?: number } = {}
+): Promise<PostDTO[]> {
+	const where =
+		opts.category && opts.category !== 'all' ? eq(post.category, opts.category) : undefined;
 	let q = db.select().from(post).where(where).orderBy(desc(post.publishedAt));
 	if (opts.limit) q = q.limit(opts.limit) as typeof q;
 	const rows = await q;
@@ -402,15 +413,20 @@ export async function createQuote(input: QuoteInput): Promise<{ id: string }> {
 }
 
 export async function listQuotes(): Promise<
-	Array<typeof quote.$inferSelect & { items: typeof quoteItem.$inferSelect[] }>
+	Array<typeof quote.$inferSelect & { items: (typeof quoteItem.$inferSelect)[] }>
 > {
 	const quotes = await db.select().from(quote).orderBy(desc(quote.createdAt));
 	if (quotes.length === 0) return [];
 	const items = await db
 		.select()
 		.from(quoteItem)
-		.where(inArray(quoteItem.quoteId, quotes.map((q) => q.id)));
-	const byQuote = new Map<string, typeof quoteItem.$inferSelect[]>();
+		.where(
+			inArray(
+				quoteItem.quoteId,
+				quotes.map((q) => q.id)
+			)
+		);
+	const byQuote = new Map<string, (typeof quoteItem.$inferSelect)[]>();
 	for (const it of items) {
 		const list = byQuote.get(it.quoteId) ?? [];
 		list.push(it);

@@ -3,12 +3,7 @@ import { defineResource } from '$lib/server/admin';
 import { categoryWriteSchema } from '$lib/server/schemas';
 import { db } from '$lib/server/db';
 import { category } from '$lib/server/db/schema';
-import {
-	createCategory,
-	deleteCategory,
-	listCategoriesAdmin,
-	updateCategory
-} from './admin-repos';
+import { createCategory, deleteCategory, listCategoriesAdmin, updateCategory } from './admin-repos';
 
 export const categoriesResource = defineResource({
 	name: 'Category',

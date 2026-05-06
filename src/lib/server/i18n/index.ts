@@ -118,9 +118,11 @@ async function bootstrapDefaults(): Promise<void> {
 	await db
 		.insert(appTranslation)
 		.values(
-			SEED
-				.filter((s) => s.en !== undefined && s.en !== '')
-				.map((s) => ({ key: s.key, locale: 'en', value: s.en! }))
+			SEED.filter((s) => s.en !== undefined && s.en !== '').map((s) => ({
+				key: s.key,
+				locale: 'en',
+				value: s.en!
+			}))
 		);
 }
 
@@ -148,19 +150,16 @@ async function ensureSeedKeys(): Promise<void> {
 		.select({ key: appTranslation.key, locale: appTranslation.locale })
 		.from(appTranslation)
 		.where(inArray(appTranslation.key, seedKeys));
-	const existingValuePairs = new Set(
-		existingValueRows.map((r) => `${r.key}::${r.locale}`)
-	);
+	const existingValuePairs = new Set(existingValueRows.map((r) => `${r.key}::${r.locale}`));
 
-	const viInserts = SEED
-		.filter((s) => !existingValuePairs.has(`${s.key}::vi`))
-		.map((s) => ({ key: s.key, locale: 'vi', value: s.vi }));
-	const enInserts = SEED
-		.filter(
-			(s) =>
-				s.en !== undefined && s.en !== '' && !existingValuePairs.has(`${s.key}::en`)
-		)
-		.map((s) => ({ key: s.key, locale: 'en', value: s.en! }));
+	const viInserts = SEED.filter((s) => !existingValuePairs.has(`${s.key}::vi`)).map((s) => ({
+		key: s.key,
+		locale: 'vi',
+		value: s.vi
+	}));
+	const enInserts = SEED.filter(
+		(s) => s.en !== undefined && s.en !== '' && !existingValuePairs.has(`${s.key}::en`)
+	).map((s) => ({ key: s.key, locale: 'en', value: s.en! }));
 
 	if (viInserts.length > 0) await db.insert(appTranslation).values(viInserts);
 	if (enInserts.length > 0) await db.insert(appTranslation).values(enInserts);

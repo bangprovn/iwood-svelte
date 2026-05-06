@@ -5,7 +5,16 @@
 
 import { and, asc, eq, inArray } from 'drizzle-orm';
 import { db } from '../db';
-import { menu, menuItem, category, product, productSpec, projectCategory, post, page } from '../db/schema';
+import {
+	menu,
+	menuItem,
+	category,
+	product,
+	productSpec,
+	projectCategory,
+	post,
+	page
+} from '../db/schema';
 import type { ProductDTO } from '$lib/types';
 import { htmlToPlainText } from '../sanitize-html';
 
@@ -77,7 +86,12 @@ export async function listMenus(): Promise<Array<MenuRow & { itemCount: number }
 	const items = await db
 		.select({ menuId: menuItem.menuId })
 		.from(menuItem)
-		.where(inArray(menuItem.menuId, rows.map((r) => r.id)));
+		.where(
+			inArray(
+				menuItem.menuId,
+				rows.map((r) => r.id)
+			)
+		);
 	const counts = new Map<string, number>();
 	for (const it of items) counts.set(it.menuId, (counts.get(it.menuId) ?? 0) + 1);
 	return rows.map((r) => ({ ...r, itemCount: counts.get(r.id) ?? 0 }));
@@ -239,10 +253,7 @@ async function uniqueSlug(base: string, excludeId?: string): Promise<string> {
 	let candidate = root;
 	let i = 2;
 	for (;;) {
-		const rows = await db
-			.select({ id: menu.id })
-			.from(menu)
-			.where(eq(menu.slug, candidate));
+		const rows = await db.select({ id: menu.id }).from(menu).where(eq(menu.slug, candidate));
 		const conflict = rows.find((r) => r.id !== excludeId);
 		if (!conflict) return candidate;
 		candidate = `${root}-${i++}`;
@@ -359,9 +370,7 @@ function resolveNode(node: MenuItemNode, locale: 'vi' | 'en', refs: RefMaps): Re
 			} else if (c.kind === 'mega_featured') {
 				const d = c.dataParsed as Record<string, unknown>;
 				const ids = Array.isArray(d.productIds) ? (d.productIds as string[]) : [];
-				const products = ids
-					.map((id) => refs.products.get(id))
-					.filter((p): p is ProductDTO => !!p);
+				const products = ids.map((id) => refs.products.get(id)).filter((p): p is ProductDTO => !!p);
 				featured = {
 					heading: pickLocale(c.labelVi, c.labelEn, locale),
 					products
@@ -378,42 +387,36 @@ function resolveLink(node: MenuItemNode, locale: 'vi' | 'en', refs: RefMaps): Re
 	let labelFallback = '';
 	switch (node.kind) {
 		case 'category':
-			href = node.refId ? refs.categoryHrefs.get(node.refId) ?? '/products' : '/products';
-			labelFallback =
-				node.refId
-					? (locale === 'en'
-							? refs.categoryLabelsEn.get(node.refId)
-							: refs.categoryLabelsVi.get(node.refId)) ?? ''
-					: '';
+			href = node.refId ? (refs.categoryHrefs.get(node.refId) ?? '/products') : '/products';
+			labelFallback = node.refId
+				? ((locale === 'en'
+						? refs.categoryLabelsEn.get(node.refId)
+						: refs.categoryLabelsVi.get(node.refId)) ?? '')
+				: '';
 			break;
 		case 'project_category':
-			href = node.refId
-				? refs.projectCategoryHrefs.get(node.refId) ?? '/projects'
-				: '/projects';
-			labelFallback =
-				node.refId
-					? (locale === 'en'
-							? refs.projectCategoryLabelsEn.get(node.refId)
-							: refs.projectCategoryLabelsVi.get(node.refId)) ?? ''
-					: '';
+			href = node.refId ? (refs.projectCategoryHrefs.get(node.refId) ?? '/projects') : '/projects';
+			labelFallback = node.refId
+				? ((locale === 'en'
+						? refs.projectCategoryLabelsEn.get(node.refId)
+						: refs.projectCategoryLabelsVi.get(node.refId)) ?? '')
+				: '';
 			break;
 		case 'post':
-			href = node.refId ? refs.postHrefs.get(node.refId) ?? '/news' : '/news';
-			labelFallback =
-				node.refId
-					? (locale === 'en'
-							? refs.postLabelsEn.get(node.refId)
-							: refs.postLabelsVi.get(node.refId)) ?? ''
-					: '';
+			href = node.refId ? (refs.postHrefs.get(node.refId) ?? '/news') : '/news';
+			labelFallback = node.refId
+				? ((locale === 'en'
+						? refs.postLabelsEn.get(node.refId)
+						: refs.postLabelsVi.get(node.refId)) ?? '')
+				: '';
 			break;
 		case 'page':
-			href = node.refId ? refs.pageHrefs.get(node.refId) ?? '/' : '/';
-			labelFallback =
-				node.refId
-					? (locale === 'en'
-							? refs.pageLabelsEn.get(node.refId)
-							: refs.pageLabelsVi.get(node.refId)) ?? ''
-					: '';
+			href = node.refId ? (refs.pageHrefs.get(node.refId) ?? '/') : '/';
+			labelFallback = node.refId
+				? ((locale === 'en'
+						? refs.pageLabelsEn.get(node.refId)
+						: refs.pageLabelsVi.get(node.refId)) ?? '')
+				: '';
 			break;
 		case 'route':
 		case 'custom':
@@ -439,7 +442,11 @@ async function loadProductsByIds(ids: string[]): Promise<ProductDTO[]> {
 	if (ids.length === 0) return [];
 	const rows = await db.select().from(product).where(inArray(product.id, ids));
 	const specs = await db
-		.select({ productId: productSpec.productId, label: productSpec.label, sortOrder: productSpec.sortOrder })
+		.select({
+			productId: productSpec.productId,
+			label: productSpec.label,
+			sortOrder: productSpec.sortOrder
+		})
 		.from(productSpec)
 		.where(inArray(productSpec.productId, ids))
 		.orderBy(asc(productSpec.productId), asc(productSpec.sortOrder));

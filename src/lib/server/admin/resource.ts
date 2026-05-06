@@ -1,10 +1,4 @@
-import {
-	error,
-	fail,
-	redirect,
-	type ActionFailure,
-	type RequestEvent
-} from '@sveltejs/kit';
+import { error, fail, redirect, type ActionFailure, type RequestEvent } from '@sveltejs/kit';
 import type { ZodType } from 'zod';
 import { requireAdmin } from '$lib/server/auth';
 import { parseForm, type FormFailState } from './parse-form';
@@ -54,10 +48,7 @@ export type ResourceConfig<
 	 * domain errors (e.g. unique-violation in locales) into a `fail(409, …)`
 	 * with field-level error attribution. If unset, errors propagate as 500.
 	 */
-	onWriteError?: (
-		err: unknown,
-		input: TInput
-	) => ActionFailure<FormFailState<TInput>>;
+	onWriteError?: (err: unknown, input: TInput) => ActionFailure<FormFailState<TInput>>;
 };
 
 type DeleteActionResult = { success: true } | ActionFailure<{ message: string }>;
@@ -128,9 +119,7 @@ export function defineResource<
 		const id = getParam(event);
 		const row = await config.getOne(id, event);
 		if (!row) throw error(404, `${config.name} not found`);
-		const related = config.loadRelated
-			? await config.loadRelated(event)
-			: ({} as TRelated);
+		const related = config.loadRelated ? await config.loadRelated(event) : ({} as TRelated);
 		return { row, ...related };
 	};
 

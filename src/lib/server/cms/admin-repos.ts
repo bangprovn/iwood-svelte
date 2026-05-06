@@ -97,10 +97,7 @@ export async function updateCategory(id: string, input: CategoryWriteInput) {
 
 export async function deleteCategory(id: string) {
 	// FK from product → category. Block delete when in use, surface to caller.
-	const [{ n }] = await db
-		.select({ n: count() })
-		.from(product)
-		.where(eq(product.categoryId, id));
+	const [{ n }] = await db.select({ n: count() }).from(product).where(eq(product.categoryId, id));
 	if (n > 0) throw new Error(`Category in use by ${n} product(s)`);
 	await db.delete(category).where(eq(category.id, id));
 }
@@ -145,9 +142,9 @@ async function replaceSpecs(productId: string, specs: string[]) {
 	await db.delete(productSpec).where(eq(productSpec.productId, productId));
 	const cleaned = specs.map((s) => s.trim()).filter(Boolean);
 	if (cleaned.length === 0) return;
-	await db.insert(productSpec).values(
-		cleaned.map((label, i) => ({ productId, label, sortOrder: i }))
-	);
+	await db
+		.insert(productSpec)
+		.values(cleaned.map((label, i) => ({ productId, label, sortOrder: i })));
 }
 
 export async function createProduct(input: ProductWriteInput) {
@@ -248,10 +245,7 @@ export async function updateProjectCategory(id: string, input: ProjectCategoryWr
 }
 
 export async function deleteProjectCategory(id: string) {
-	const [{ n }] = await db
-		.select({ n: count() })
-		.from(project)
-		.where(eq(project.categoryId, id));
+	const [{ n }] = await db.select({ n: count() }).from(project).where(eq(project.categoryId, id));
 	if (n > 0) throw new Error(`Category in use by ${n} project(s)`);
 	await db.delete(projectCategory).where(eq(projectCategory.id, id));
 }
@@ -510,10 +504,7 @@ export async function deleteContact(id: string) {
 // ===========================================================================
 
 export async function listNewsletterAdmin() {
-	return db
-		.select()
-		.from(newsletterSubscription)
-		.orderBy(desc(newsletterSubscription.createdAt));
+	return db.select().from(newsletterSubscription).orderBy(desc(newsletterSubscription.createdAt));
 }
 
 export async function deleteNewsletter(id: number) {

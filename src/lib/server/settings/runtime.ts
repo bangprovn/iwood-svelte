@@ -14,12 +14,7 @@
 import { eq, inArray } from 'drizzle-orm';
 import { db } from '../db';
 import { siteSetting } from '../db/schema';
-import {
-	SETTING_DEFS,
-	SETTING_DEF_BY_KEY,
-	type SettingDef,
-	type SettingValue
-} from './registry';
+import { SETTING_DEFS, SETTING_DEF_BY_KEY, type SettingDef, type SettingValue } from './registry';
 
 export type { SettingValue } from './registry';
 
@@ -185,11 +180,12 @@ function parseStored(raw: string, kind: DefKind): SettingValue {
 
 // --- Field-level validation + parsing for admin form posts ---------------
 
-export type FieldParseResult =
-	| { ok: true; value: SettingValue }
-	| { ok: false; error: string };
+export type FieldParseResult = { ok: true; value: SettingValue } | { ok: false; error: string };
 
-export function parseAndValidate(def: SettingDef, raw: FormDataEntryValue | null): FieldParseResult {
+export function parseAndValidate(
+	def: SettingDef,
+	raw: FormDataEntryValue | null
+): FieldParseResult {
 	if (def.type === 'toggle') {
 		// HTML form: checkbox sends "1" when checked, missing when unchecked.
 		const checked = raw === '1' || raw === 'on' || raw === 'true';
@@ -238,11 +234,19 @@ export function cssVariables(settings: SettingsMap): string {
 
 	if (accent) lines.push(`--accent:${accent};`, `--iwood-red:${accent};`, `--danger:${accent};`);
 	if (accentHover) lines.push(`--accent-hover:${accentHover};`, `--iwood-red-deep:${accentHover};`);
-	if (ink) lines.push(`--ink:${ink};`, `--fg-1:${ink};`, `--border-strong:${ink};`, `--bg-dark:${ink};`);
-	if (paper) lines.push(`--paper:${paper};`, `--bg:${paper};`, `--fg-on-red:${paper};`, `--fg-on-dark:${paper};`);
+	if (ink)
+		lines.push(`--ink:${ink};`, `--fg-1:${ink};`, `--border-strong:${ink};`, `--bg-dark:${ink};`);
+	if (paper)
+		lines.push(
+			`--paper:${paper};`,
+			`--bg:${paper};`,
+			`--fg-on-red:${paper};`,
+			`--fg-on-dark:${paper};`
+		);
 	if (bone) lines.push(`--bone:${bone};`, `--bg-alt:${bone};`);
 	if (bodyFont) lines.push(`--font-body:'${bodyFont}', 'Inter', system-ui, sans-serif;`);
-	if (headingFont) lines.push(`--font-display:'${headingFont}', 'Be Vietnam Pro', system-ui, sans-serif;`);
+	if (headingFont)
+		lines.push(`--font-display:'${headingFont}', 'Be Vietnam Pro', system-ui, sans-serif;`);
 	const r = RADIUS_PRESETS[radius] ?? RADIUS_PRESETS.sharp;
 	lines.push(`--radius-sm:${r.sm};`, `--radius-md:${r.md};`, `--radius-lg:${r.lg};`);
 	return `:root{${lines.join('')}}`;

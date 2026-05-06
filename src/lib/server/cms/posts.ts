@@ -1,12 +1,6 @@
 import { defineResource } from '$lib/server/admin';
 import { postWriteSchema } from '$lib/server/schemas';
-import {
-	createPost,
-	deletePost,
-	getPostAdmin,
-	listPostsAdmin,
-	updatePost
-} from './admin-repos';
+import { createPost, deletePost, getPostAdmin, listPostsAdmin, updatePost } from './admin-repos';
 
 export const postsResource = defineResource({
 	name: 'Post',

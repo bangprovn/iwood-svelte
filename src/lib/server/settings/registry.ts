@@ -8,13 +8,7 @@
 
 export type SettingValue = string | number | boolean;
 
-export type SettingGroup =
-	| 'appearance'
-	| 'theme'
-	| 'system'
-	| 'seo'
-	| 'integrations'
-	| 'social';
+export type SettingGroup = 'appearance' | 'theme' | 'system' | 'seo' | 'integrations' | 'social';
 
 export type FieldType =
 	| 'text'
@@ -52,18 +46,13 @@ export type SelectDef = BaseDef<string> & {
 	options: { value: string; label: string }[];
 };
 
-export type SettingDef =
-	| TextDef
-	| ColorDef
-	| ImageDef
-	| NumberDef
-	| ToggleDef
-	| SelectDef;
+export type SettingDef = TextDef | ColorDef | ImageDef | NumberDef | ToggleDef | SelectDef;
 
 const HEX_RE = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
 const URL_OR_PATH_RE = /^(https?:\/\/[^\s]+|\/[^\s]*)$/;
 
-const validateHex = (raw: string) => (HEX_RE.test(raw.trim()) ? null : 'Must be a hex color (e.g. #e30613)');
+const validateHex = (raw: string) =>
+	HEX_RE.test(raw.trim()) ? null : 'Must be a hex color (e.g. #e30613)';
 const validateUrlOrPath = (raw: string) => {
 	if (!raw) return null;
 	return URL_OR_PATH_RE.test(raw.trim()) ? null : 'Must be a URL or absolute path';
