@@ -13,7 +13,7 @@ import {
 	type pageBlockContent as PageBlockContentT
 } from '../db/schema';
 import { getAllBlockDefinitions, getBlockDefinition } from '$lib/page-blocks/registry';
-import { listCategories, listProducts } from '../repos';
+import { listCategories, listProducts } from './public-repos';
 
 export type PageDTO = typeof page.$inferSelect;
 export type PageBlockDTO = typeof pageBlock.$inferSelect;

@@ -1,5 +1,5 @@
 import { error, json } from '@sveltejs/kit';
-import { getProduct } from '$lib/server/repos';
+import { getProduct } from '$lib/server/cms';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ params }) => {

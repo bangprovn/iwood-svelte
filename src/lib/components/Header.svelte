@@ -6,7 +6,7 @@
 	import { inquiry } from '$lib/state/inquiry.svelte';
 	import { useI18n, t, localizedHref } from '$lib/i18n';
 	import type { CategoryDTO, ProductDTO } from '$lib/types';
-	import type { ResolvedNavItem } from '$lib/server/repos/menu.repo';
+	import type { ResolvedNavItem } from '$lib/server/cms/admin';
 
 	const i18n = useI18n();
 	const PHONE = '0915 000 000';

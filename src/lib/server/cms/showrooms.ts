@@ -6,7 +6,7 @@ import {
 	getShowroomAdmin,
 	listShowroomsAdmin,
 	updateShowroom
-} from '$lib/server/admin-repos';
+} from './admin-repos';
 
 export const showroomsResource = defineResource({
 	name: 'Showroom',

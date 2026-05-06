@@ -1,5 +1,5 @@
 import { requireAdmin } from '$lib/server/admin-guard';
-import { listPages, deletePage, duplicatePage } from '$lib/server/repos/page.repo';
+import { listPages, deletePage, duplicatePage } from '$lib/server/cms/admin';
 
 export async function load(event) {
 	requireAdmin(event);

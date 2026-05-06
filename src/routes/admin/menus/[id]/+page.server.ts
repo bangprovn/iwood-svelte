@@ -9,7 +9,7 @@ import {
 	updateMenu,
 	type MenuItemInput,
 	type MenuItemKind
-} from '$lib/server/repos/menu.repo';
+} from '$lib/server/cms/admin';
 import { db } from '$lib/server/db';
 import {
 	category,

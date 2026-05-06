@@ -6,7 +6,7 @@ import {
 	getPostAdmin,
 	listPostsAdmin,
 	updatePost
-} from '$lib/server/admin-repos';
+} from './admin-repos';
 
 export const postsResource = defineResource({
 	name: 'Post',

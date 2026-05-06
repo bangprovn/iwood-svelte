@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import { getCategory, getProduct, listRelatedProducts } from '$lib/server/repos';
+import { getCategory, getProduct, listRelatedProducts } from '$lib/server/cms';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params }) => {

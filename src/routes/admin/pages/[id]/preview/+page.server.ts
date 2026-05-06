@@ -1,5 +1,5 @@
 import { requireAdmin } from '$lib/server/admin-guard';
-import { getPagePreviewById } from '$lib/server/repos/page.repo';
+import { getPagePreviewById } from '$lib/server/cms/admin';
 import { getI18nSnapshot } from '$lib/server/translations';
 import { error } from '@sveltejs/kit';
 

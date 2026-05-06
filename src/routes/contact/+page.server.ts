@@ -1,5 +1,5 @@
 import { fail } from '@sveltejs/kit';
-import { createContact, listShowrooms } from '$lib/server/repos';
+import { createContact, listShowrooms } from '$lib/server/cms';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {

@@ -1,9 +1,9 @@
-// Admin-only write surface. The public read surface lives in `repos.ts`.
+// Admin-only write surface. The public read surface lives in `public-repos.ts`.
 // Every function here assumes the caller has already passed `requireAdmin`.
 
 import { and, asc, count, desc, eq, like, or } from 'drizzle-orm';
-import { db } from './db';
-import { auth } from './auth';
+import { db } from '../db';
+import { auth } from '../auth';
 import {
 	category,
 	contactMessage,
@@ -18,7 +18,7 @@ import {
 	quoteItem,
 	showroom,
 	user
-} from './db/schema';
+} from '../db/schema';
 
 // ---------------------------------------------------------------------------
 // id helpers

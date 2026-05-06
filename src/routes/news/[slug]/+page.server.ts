@@ -1,5 +1,5 @@
 import { error } from '@sveltejs/kit';
-import { getPost, listMorePosts } from '$lib/server/repos';
+import { getPost, listMorePosts } from '$lib/server/cms';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params }) => {

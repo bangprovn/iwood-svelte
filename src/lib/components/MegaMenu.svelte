@@ -3,7 +3,7 @@
 	import { fmt, IMG } from '$lib/data/iwood';
 	import { useI18n, t } from '$lib/i18n';
 	import type { CategoryDTO, ProductDTO } from '$lib/types';
-	import type { ResolvedNavItem } from '$lib/server/repos/menu.repo';
+	import type { ResolvedNavItem } from '$lib/server/cms/admin';
 
 	type Props = {
 		open: boolean;

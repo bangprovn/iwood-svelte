@@ -2,7 +2,7 @@
 	import { enhance } from '$app/forms';
 	import { untrack } from 'svelte';
 	import ImageField from '$lib/components/admin/ImageField.svelte';
-	import type { PageDTO } from '$lib/server/repos/page.repo';
+	import type { PageDTO } from '$lib/server/cms/admin';
 
 	type Props = {
 		page: PageDTO;

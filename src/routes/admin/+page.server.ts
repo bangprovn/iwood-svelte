@@ -1,5 +1,5 @@
 import { requireAdmin } from '$lib/server/admin-guard';
-import { dashboardCounts, listContactsAdmin, listQuotesAdmin } from '$lib/server/admin-repos';
+import { dashboardCounts, listContactsAdmin, listQuotesAdmin } from '$lib/server/cms/admin';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {

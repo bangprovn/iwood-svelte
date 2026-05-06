@@ -1,6 +1,6 @@
 import { and, asc, desc, eq, inArray, ne, sql } from 'drizzle-orm';
-import { db } from './db';
-import { htmlToPlainText } from './sanitize-html';
+import { db } from '../db';
+import { htmlToPlainText } from '../sanitize-html';
 import {
 	category,
 	contactMessage,
@@ -14,7 +14,7 @@ import {
 	quote,
 	quoteItem,
 	showroom
-} from './db/schema';
+} from '../db/schema';
 
 export type {
 	CategoryDTO,

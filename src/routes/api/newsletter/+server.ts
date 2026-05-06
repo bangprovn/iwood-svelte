@@ -1,5 +1,5 @@
 import { error, json } from '@sveltejs/kit';
-import { subscribeNewsletter } from '$lib/server/repos';
+import { subscribeNewsletter } from '$lib/server/cms';
 import type { RequestHandler } from './$types';
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

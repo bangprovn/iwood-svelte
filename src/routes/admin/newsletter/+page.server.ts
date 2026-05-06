@@ -1,6 +1,6 @@
 import { fail } from '@sveltejs/kit';
 import { requireAdmin } from '$lib/server/admin-guard';
-import { deleteNewsletter, listNewsletterAdmin } from '$lib/server/admin-repos';
+import { deleteNewsletter, listNewsletterAdmin } from '$lib/server/cms/admin';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {

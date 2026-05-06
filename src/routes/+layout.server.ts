@@ -1,11 +1,11 @@
-import { listCategories, listProducts } from '$lib/server/repos';
+import { listCategories, listProducts } from '$lib/server/cms';
 import { buildMessagesForLocale, getI18nSnapshot } from '$lib/server/translations';
-import { getPageOverride } from '$lib/server/repos/page.repo';
+import { getPageOverride } from '$lib/server/cms/admin';
 import {
 	ensurePrimaryMenuSeed,
 	getMenuByLocation,
 	resolveMenuTree
-} from '$lib/server/repos/menu.repo';
+} from '$lib/server/cms/admin';
 import { cssVariables, getPublicSettings, googleFontsHref } from '$lib/server/settings';
 import type { LayoutServerLoad } from './$types';
 

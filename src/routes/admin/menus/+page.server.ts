@@ -1,6 +1,6 @@
 import { fail } from '@sveltejs/kit';
 import { requireAdmin } from '$lib/server/admin-guard';
-import { deleteMenu, listMenus } from '$lib/server/repos/menu.repo';
+import { deleteMenu, listMenus } from '$lib/server/cms/admin';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {

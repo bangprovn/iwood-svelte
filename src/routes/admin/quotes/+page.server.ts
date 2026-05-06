@@ -6,7 +6,7 @@ import {
 	QUOTE_STATUSES,
 	updateQuoteStatus,
 	type QuoteStatus
-} from '$lib/server/admin-repos';
+} from '$lib/server/cms/admin';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {

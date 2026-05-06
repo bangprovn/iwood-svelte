@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Component } from 'svelte';
-	import type { PageBlockDTO } from '$lib/server/repos/page.repo';
+	import type { PageBlockDTO } from '$lib/server/cms/admin';
 	import type { BlockType } from '$lib/page-blocks/types';
 	import HeroBlock from './HeroBlock.svelte';
 	import TextBlock from './TextBlock.svelte';

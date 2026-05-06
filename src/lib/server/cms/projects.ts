@@ -8,7 +8,7 @@ import {
 	listProjectCategoriesAdmin,
 	listProjectsAdmin,
 	updateProject
-} from '$lib/server/admin-repos';
+} from './admin-repos';
 
 async function loadProjectFormDeps() {
 	const [categories, products] = await Promise.all([

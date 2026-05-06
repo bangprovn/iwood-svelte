@@ -1,4 +1,4 @@
-import { getPageBySlug } from '$lib/server/repos/page.repo';
+import { getPageBySlug } from '$lib/server/cms/admin';
 import { getI18nSnapshot } from '$lib/server/translations';
 import { error } from '@sveltejs/kit';
 

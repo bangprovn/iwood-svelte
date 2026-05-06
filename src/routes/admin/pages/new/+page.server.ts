@@ -1,5 +1,5 @@
 import { requireAdmin } from '$lib/server/admin-guard';
-import { createPage, validatePageInput, isRoutePatternTaken } from '$lib/server/repos/page.repo';
+import { createPage, validatePageInput, isRoutePatternTaken } from '$lib/server/cms/admin';
 import { fail, redirect } from '@sveltejs/kit';
 
 export async function load(event) {

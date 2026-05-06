@@ -7,7 +7,7 @@ import {
 	listCategoriesAdmin,
 	listProductsAdmin,
 	updateProduct
-} from '$lib/server/admin-repos';
+} from './admin-repos';
 
 export const productsResource = defineResource({
 	name: 'Product',

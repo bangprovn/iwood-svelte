@@ -1,4 +1,4 @@
-import { listCategories, listProducts, type ListProductsOpts } from '$lib/server/repos';
+import { listCategories, listProducts, type ListProductsOpts } from '$lib/server/cms';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ url }) => {

@@ -1,5 +1,5 @@
 import { requireAdmin } from '$lib/server/admin-guard';
-import { getPage, listRevisions, revertToRevision } from '$lib/server/repos/page.repo';
+import { getPage, listRevisions, revertToRevision } from '$lib/server/cms/admin';
 import { error, fail } from '@sveltejs/kit';
 
 export async function load(event) {

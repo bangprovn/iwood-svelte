@@ -16,7 +16,7 @@ import {
 	publishPage,
 	hasUnpublishedChanges,
 	listBlockTypes
-} from '$lib/server/repos/page.repo';
+} from '$lib/server/cms/admin';
 import { sanitizeHtml } from '$lib/server/sanitize-html';
 import type { ContentField, SettingsField } from '$lib/page-blocks/registry';
 import { error, fail } from '@sveltejs/kit';

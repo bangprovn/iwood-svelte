@@ -1,6 +1,6 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { requireAdmin } from '$lib/server/admin-guard';
-import { createMenu, MENU_LOCATIONS } from '$lib/server/repos/menu.repo';
+import { createMenu, MENU_LOCATIONS } from '$lib/server/cms/admin';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async (event) => {

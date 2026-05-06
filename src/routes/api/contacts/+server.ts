@@ -1,5 +1,5 @@
 import { error, json } from '@sveltejs/kit';
-import { createContact, type ContactInput } from '$lib/server/repos';
+import { createContact, type ContactInput } from '$lib/server/cms';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ request }) => {

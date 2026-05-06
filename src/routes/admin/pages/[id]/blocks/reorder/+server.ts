@@ -1,5 +1,5 @@
 import { requireAdmin } from '$lib/server/admin-guard';
-import { reorderBlocks } from '$lib/server/repos/page.repo';
+import { reorderBlocks } from '$lib/server/cms/admin';
 import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 

@@ -8,7 +8,7 @@ import {
 	deleteCategory,
 	listCategoriesAdmin,
 	updateCategory
-} from '$lib/server/admin-repos';
+} from './admin-repos';
 
 export const categoriesResource = defineResource({
 	name: 'Category',

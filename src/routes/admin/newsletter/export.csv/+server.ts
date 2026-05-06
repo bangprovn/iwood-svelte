@@ -1,5 +1,5 @@
 import { requireAdmin } from '$lib/server/admin-guard';
-import { listNewsletterAdmin } from '$lib/server/admin-repos';
+import { listNewsletterAdmin } from '$lib/server/cms/admin';
 import type { RequestHandler } from './$types';
 
 function csvCell(v: string): string {
