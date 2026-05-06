@@ -53,16 +53,8 @@ async function uniqueSlug(
 // CATEGORIES
 // ===========================================================================
 
-export type CategoryWriteInput = {
-	id?: string;
-	nameVi: string;
-	nameEn: string;
-	blurb: string;
-	priceFrom: number;
-	imageUrl: string;
-	displayCount?: number;
-	sortOrder?: number;
-};
+export type { CategoryWriteInput } from '$lib/server/schemas';
+import type { CategoryWriteInput } from '$lib/server/schemas';
 
 export async function listCategoriesAdmin() {
 	return db.select().from(category).orderBy(asc(category.sortOrder));
