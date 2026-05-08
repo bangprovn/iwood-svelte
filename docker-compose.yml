@@ -1,0 +1,37 @@
+# docker-compose for Coolify
+#
+# Coolify "magic" env vars used here:
+#   SERVICE_FQDN_APP_3000  -> binds the app's public FQDN to container port 3000
+#   SERVICE_URL_APP        -> full https URL Coolify assigned (used for ORIGIN)
+#   SERVICE_PASSWORD_64_AUTH -> stable 64-char random secret (BETTER_AUTH_SECRET)
+#
+# Anything else (ADMIN_EMAILS, etc.) is set in Coolify's "Environment Variables" UI.
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      # Coolify will assign a public FQDN to port 3000 of this service
+      - SERVICE_FQDN_APP_3000
+      # SvelteKit / app config
+      - ORIGIN=$SERVICE_URL_APP
+      - DATABASE_URL=file:/app/data/local.db
+      - BETTER_AUTH_SECRET=$SERVICE_PASSWORD_64_AUTH
+      - ADMIN_EMAILS=${ADMIN_EMAILS:-}
+      - PORT=3000
+      - HOST=0.0.0.0
+      - BODY_SIZE_LIMIT=10M
+    volumes:
+      - app-data:/app/data
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://127.0.0.1:3000/']
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  app-data:
