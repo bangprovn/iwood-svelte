@@ -22,7 +22,6 @@
 		"@better-auth/cli": "~1.4.21",
 		"@eslint/compat": "^2.0.4",
 		"@eslint/js": "^10.0.1",
-		"@libsql/client": "^0.17.2",
 		"@sveltejs/adapter-node": "^5.3.3",
 		"@sveltejs/kit": "^2.57.0",
 		"@sveltejs/vite-plugin-svelte": "^7.0.0",
@@ -48,6 +47,7 @@
 		"vite": "^8.0.7"
 	},
 	"dependencies": {
+		"@libsql/client": "^0.17.2",
 		"zod": "^4.4.3"
 	},
 	"overrides": {
