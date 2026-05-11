@@ -1,10 +1,20 @@
-import { drizzle } from 'drizzle-orm/libsql';
+import { drizzle, type LibSQLDatabase } from 'drizzle-orm/libsql';
 import { createClient } from '@libsql/client';
 import * as schema from './schema';
 import { env } from '$env/dynamic/private';
 
-if (!env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
+type DB = LibSQLDatabase<typeof schema>;
 
-const client = createClient({ url: env.DATABASE_URL });
+let instance: DB | undefined;
 
-export const db = drizzle(client, { schema });
+function init(): DB {
+	if (instance) return instance;
+	if (!env.DATABASE_URL) throw new Error('DATABASE_URL is not set');
+	instance = drizzle(createClient({ url: env.DATABASE_URL }), { schema });
+	return instance;
+}
+
+export const db = new Proxy({} as DB, {
+	get: (_t, p, r) => Reflect.get(init() as object, p, r),
+	has: (_t, p) => Reflect.has(init() as object, p)
+});
