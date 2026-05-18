@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
 	import ProductCard from '$lib/components/ProductCard.svelte';
-	import { IMG } from '$lib/data/iwood';
 	import { lightbox } from '$lib/state/lightbox.svelte';
 	import { useI18n, t } from '$lib/i18n';
 	import type { PageData } from './$types';
@@ -12,12 +11,19 @@
 	const projectCategories = $derived(data.projectCategories);
 	const usedProducts = $derived(data.usedProducts);
 	const more = $derived(data.more);
-	const gallery = $derived(
-		pj ? [pj.img, IMG.proj2, IMG.proj3, IMG.proj4, IMG.proj5, IMG.proj6] : []
-	);
+	// Use the cover plus any extra images parsed from the project body. The
+	// cover is excluded from `pj.gallery` server-side so we just prepend it.
+	const gallery = $derived(pj ? [pj.img, ...pj.gallery] : []);
 
+	// Editorial layout for the first 6 slots. Items 7+ tile uniformly below
+	// (span 2 in a 6-col grid → 3 per row, 4/3 ratio).
 	const gallerySpans = [3, 3, 2, 2, 2, 4];
 	const galleryRatios = ['16/10', '16/10', '4/5', '4/5', '4/5', '21/9'];
+	const GALLERY_PREVIEW = 12;
+	let showAll = $state(false);
+	const visibleGallery = $derived(
+		showAll || gallery.length <= GALLERY_PREVIEW ? gallery : gallery.slice(0, GALLERY_PREVIEW)
+	);
 
 	function openLightbox(i: number) {
 		if (!pj) return;
@@ -122,9 +128,9 @@
 					<h2>{t($i18n, 'project.gallery_heading')}</h2>
 				</div>
 				<div class="gallery-mosaic">
-					{#each gallery as g, i (i)}
-						{@const span = gallerySpans[i] || 2}
-						{@const ratio = galleryRatios[i] || '4/3'}
+					{#each visibleGallery as g, i (i)}
+						{@const span = i < gallerySpans.length ? gallerySpans[i] : 2}
+						{@const ratio = i < galleryRatios.length ? galleryRatios[i] : '4/3'}
 						<!-- svelte-ignore a11y_click_events_have_key_events -->
 						<!-- svelte-ignore a11y_no_static_element_interactions -->
 						<div
@@ -133,6 +139,19 @@
 						></div>
 					{/each}
 				</div>
+				{#if gallery.length > GALLERY_PREVIEW}
+					<div style="text-align: center; margin-top: 24px;">
+						<button
+							type="button"
+							class="btn btn-secondary"
+							onclick={() => (showAll = !showAll)}
+						>
+							{showAll
+								? t($i18n, 'project.gallery_show_less')
+								: t($i18n, 'project.gallery_show_all', { n: gallery.length })}
+						</button>
+					</div>
+				{/if}
 			</div>
 		</section>
 

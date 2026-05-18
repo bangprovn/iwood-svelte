@@ -26,6 +26,13 @@ COPY --from=build /app/drizzle ./drizzle
 COPY --from=build /app/drizzle.config.ts ./drizzle.config.ts
 COPY --from=build /app/src/lib/server/db ./src/lib/server/db
 
+# Bundled WP mirror + seed scripts so an admin can manually populate
+# /app/data/local.db from the container shell: `npm run db:seed:wp`.
+# Refresh the mirror locally (`node scripts/wp-mirror.mjs`) and rebuild
+# the image to ship new data.
+COPY --from=build /app/dumps/wp.sqlite ./dumps/wp.sqlite
+COPY --from=build /app/scripts ./scripts
+
 RUN mkdir -p /app/data && chown -R node:node /app
 USER node
 

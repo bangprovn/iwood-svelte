@@ -52,6 +52,8 @@ export type ProjectDTO = {
 	summaryEn?: string;
 	/** Plain-text projection of `summary`. */
 	summaryText: string;
+	/** Additional image URLs parsed from the project body. The cover image (`img`) is not duplicated here. */
+	gallery: string[];
 	products: string[];
 };
 

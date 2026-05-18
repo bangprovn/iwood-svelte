@@ -16,6 +16,16 @@ build
 *.db-wal
 *.db-shm
 
+# Locally-downloaded media (used by `node scripts/seed-from-wp.mjs` in dev).
+# In production, images live in S3/CDN — don't ship gigabytes into the image.
+static/uploads/
+
+# Other large local artifacts. dumps/wp.sqlite IS intentionally included so the
+# seed script can run from inside the container.
+dumps/extracted/
+dumps/*.sql.gz
+dumps/image-failures.log
+
 .vscode
 .idea
 .DS_Store

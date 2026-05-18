@@ -814,6 +814,8 @@
 	{ "key": "project.similar_quote", "vi": "Báo giá dự án tương tự", "en": "Quote similar project" },
 	{ "key": "project.gallery_eyebrow", "vi": "Gallery", "en": "Gallery" },
 	{ "key": "project.gallery_heading", "vi": "Hình ảnh thi công", "en": "Construction photos" },
+	{ "key": "project.gallery_show_all", "vi": "Xem tất cả ({n} ảnh)", "en": "Show all ({n} photos)" },
+	{ "key": "project.gallery_show_less", "vi": "Thu gọn", "en": "Show less" },
 	{ "key": "project.materials_eyebrow", "vi": "Vật liệu sử dụng", "en": "Materials used" },
 	{
 		"key": "project.materials_heading",
@@ -862,6 +864,9 @@
 	},
 	{ "key": "news.err_subscribe", "vi": "Đăng ký không thành công", "en": "Subscription failed" },
 	{ "key": "news.err_connection", "vi": "Lỗi kết nối", "en": "Connection error" },
+	{ "key": "news.empty", "vi": "Chưa có bài viết nào.", "en": "No articles yet." },
+	{ "key": "news.prev_page", "vi": "Trang trước", "en": "Previous" },
+	{ "key": "news.next_page", "vi": "Trang sau", "en": "Next" },
 	{ "key": "news_detail.read_time", "vi": "5 phút đọc", "en": "5 min read" },
 	{
 		"key": "news_detail.pending",

@@ -16,6 +16,8 @@
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
+		"db:seed:wp": "node scripts/seed-from-wp.mjs",
+		"uploads:mirror:s3": "node scripts/mirror-uploads-to-s3.mjs",
 		"auth:schema": "better-auth generate --config src/lib/server/auth.ts --output src/lib/server/db/auth.schema.ts --yes"
 	},
 	"devDependencies": {
@@ -44,9 +46,11 @@
 		"tailwindcss": "^4.2.2",
 		"typescript": "^6.0.2",
 		"typescript-eslint": "^8.58.1",
-		"vite": "^8.0.7"
+		"vite": "^8.0.7",
+		"wrangler": "^4.92.0"
 	},
 	"dependencies": {
+		"@aws-sdk/client-s3": "^3.1048.0",
 		"@libsql/client": "^0.17.2",
 		"zod": "^4.4.3"
 	},

@@ -23,3 +23,7 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 # SQLite
 *.db
+
+# Local media + WP migration artifacts (kept out of git; see Dockerfile/scripts)
+static/uploads/
+dumps/

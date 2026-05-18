@@ -83,6 +83,7 @@ export const project = sqliteTable(
 		imageUrl: text('image_url').notNull(),
 		summaryVi: text('summary_vi').notNull(),
 		summaryEn: text('summary_en'),
+		gallery: text('gallery').notNull().default('[]'),
 		createdAt: integer('created_at', { mode: 'timestamp' })
 			.notNull()
 			.default(sql`(unixepoch())`)

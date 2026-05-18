@@ -237,6 +237,13 @@ async function attachProjectProducts(rows: { id: string }[]): Promise<Map<string
 }
 
 function toProjectDTO(r: typeof project.$inferSelect, products: string[]): ProjectDTO {
+	let gallery: string[] = [];
+	try {
+		const parsed = JSON.parse(r.gallery);
+		if (Array.isArray(parsed)) gallery = parsed.filter((v): v is string => typeof v === 'string');
+	} catch {
+		// malformed gallery JSON — treat as empty
+	}
 	return {
 		id: r.id,
 		vi: r.nameVi,
@@ -249,6 +256,7 @@ function toProjectDTO(r: typeof project.$inferSelect, products: string[]): Proje
 		summary: r.summaryVi,
 		summaryEn: r.summaryEn ?? undefined,
 		summaryText: htmlToPlainText(r.summaryVi),
+		gallery,
 		products
 	};
 }
@@ -313,14 +321,21 @@ function toPostDTO(r: typeof post.$inferSelect): PostDTO {
 }
 
 export async function listPosts(
-	opts: { category?: string; limit?: number } = {}
+	opts: { category?: string; limit?: number; offset?: number } = {}
 ): Promise<PostDTO[]> {
 	const where =
 		opts.category && opts.category !== 'all' ? eq(post.category, opts.category) : undefined;
 	let q = db.select().from(post).where(where).orderBy(desc(post.publishedAt));
 	if (opts.limit) q = q.limit(opts.limit) as typeof q;
+	if (opts.offset) q = q.offset(opts.offset) as typeof q;
 	const rows = await q;
 	return rows.map(toPostDTO);
+}
+
+export async function countPosts(category?: string): Promise<number> {
+	const where = category && category !== 'all' ? eq(post.category, category) : undefined;
+	const [r] = await db.select({ n: sql<number>`count(*)` }).from(post).where(where);
+	return Number(r?.n ?? 0);
 }
 
 export async function getPost(slug: string): Promise<PostDTO | null> {
