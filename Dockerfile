@@ -25,13 +25,23 @@ COPY --from=build /app/package.json ./package.json
 COPY --from=build /app/drizzle ./drizzle
 COPY --from=build /app/drizzle.config.ts ./drizzle.config.ts
 COPY --from=build /app/src/lib/server/db ./src/lib/server/db
-
-# Bundled WP mirror + seed scripts so an admin can manually populate
-# /app/data/local.db from the container shell: `npm run db:seed:wp`.
-# Refresh the mirror locally (`node scripts/wp-mirror.mjs`) and rebuild
-# the image to ship new data.
-COPY --from=build /app/dumps/wp.sqlite ./dumps/wp.sqlite
 COPY --from=build /app/scripts ./scripts
+
+# WP mirror seed DB. Fetched at build time from R2 (or any HTTPS URL) so an
+# admin can run `npm run db:seed:wp` from the container shell. The file is
+# gitignored, so set WP_MIRROR_URL as a build arg in CI (Coolify: Build args).
+# Use a presigned R2 URL if the bucket is private; refresh the URL whenever
+# you redeploy. Leave unset to build without the seed file (e.g. local builds
+# that don't need it baked in).
+ARG WP_MIRROR_URL=""
+RUN mkdir -p /app/dumps && \
+    if [ -n "$WP_MIRROR_URL" ]; then \
+        echo "Fetching wp.sqlite from $WP_MIRROR_URL" && \
+        wget -q -O /app/dumps/wp.sqlite "$WP_MIRROR_URL" && \
+        echo "wp.sqlite size: $(wc -c < /app/dumps/wp.sqlite) bytes"; \
+    else \
+        echo "WP_MIRROR_URL not set — skipping wp.sqlite bundle"; \
+    fi
 
 RUN mkdir -p /app/data && chown -R node:node /app
 USER node
